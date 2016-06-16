@@ -16,7 +16,7 @@ def calculateAverageDownlink(csvFileName):
 		#writer.writerow(["Average downlink"])
 		#writer.writerow([allDowns/count])
 	
-	
+	#teits
 	return str(allDowns/count) 
 	testfile.close
 
