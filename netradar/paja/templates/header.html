@@ -1,0 +1,20 @@
+{% block content %}
+<header>
+        <nav>
+            <ul id="navone">
+            <li><a href="/">Netradar</a></li>
+            </ul>
+            <ul id="navtwo">
+              {% if user.is_authenticated %}
+              <li><a>Hey, {{ user.username }}.</a></li>
+              <li><a href="/pong">Store</a></li>
+              <li><a href="/account">Account</a></li>
+              <li><a href="/logout">Logout</a></li>
+              {% else %}
+              <li><a href="/login">Login</a></li>
+              <li><a href="/register">Register</a></li>
+              {% endif %}
+            </ul>
+        </nav>
+</header>
+{% endblock %}

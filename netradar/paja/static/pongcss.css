@@ -1,0 +1,50 @@
+a {
+	text-decoration: none;
+	color: #444;
+}
+
+a:hover {
+	color: #ff4d4d;
+}
+
+header {
+    height: 0px;
+}
+
+#navone {
+    float: left;
+    margin-left: 25px;
+}
+
+#navtwo {
+    float: right;
+    margin-right: 25px;
+}
+
+header nav ul li {
+    float: left;
+    display: inline-block;
+    margin-top: 30px;
+}
+
+header nav ul li a {
+    color: whitesmoke;
+	text-transform: uppercase;
+	font-weight: bold;
+    display: block;
+	margin-right: 20px;
+}
+
+body {
+    background-color: #444;
+}
+
+.pongcontainer {
+    width: 720px;
+    height: 480px;
+    margin: 50px auto 50px auto;
+}
+
+#pongcanvas {
+    background-color: #fff;
+}

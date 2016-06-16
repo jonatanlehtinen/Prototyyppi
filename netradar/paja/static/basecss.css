@@ -1,0 +1,107 @@
+body {
+    background-color: #111;
+
+    color: #00ff00;
+    font: normal 15px "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+p {
+    line-height: 20px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-weight: 300;
+    color: ##00ff00;
+    font-size: 55px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+a {
+	text-decoration: none;
+	color: #00ff00;
+}
+
+a:hover {
+	color: #ff4d4d;
+}
+
+strong {
+	font-weight: bold;
+}
+
+header {
+    height: 0px;
+}
+
+#navone {
+    float: left;
+    margin-left: 25px;
+}
+
+#navtwo {
+    float: right;
+    margin-right: 25px;
+}
+
+header nav ul li {
+    float: left;
+    display: inline-block;
+    margin-top: 30px;
+}
+
+header nav ul li a {
+    color: black;
+	text-transform: uppercase;
+	font-weight: bold;
+    display: block;
+	margin-right: 20px;
+}
+
+#sos-image {
+    height: 800px;
+    padding-top: 1px;
+    background-image: url("netradar_logo.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+#sos-image h2 {
+	margin: 500px 0px 30px 0px;
+}
+
+.button-1 {
+	display: block;
+	text-align: center;
+	border: 2px solid black;
+    border-radius: 15px;
+	color: #00ff00;
+	width: 150px;
+	height: 50px;
+	font-size: 20px;
+	line-height: 50px;
+	margin: 0 auto;
+}
+
+.button-1:hover {
+    border: 2px solid #ff4d4d;
+    border-radius: 15px;
+	background-color: #ff4d4d;
+	color: #fff;
+}
+
+footer {
+	padding: 30px 0;
+	background-color: #111;
+}
+
+#footer-info {
+	width: 420px;
+	margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    color: fff;
+}

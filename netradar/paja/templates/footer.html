@@ -1,0 +1,35 @@
+{% block content %}
+        <footer>
+            <div class="wrapper">
+                <div id="footer-info">
+                    <p>ELEC protopaja-projekti 2016 Netradar</p>
+                    <br>
+
+            {% autoescape on %}
+
+            {% with "http://localhost:8000" as host %}
+            {% with "Share in" as share_txt %}
+
+            {% with "twitter" as service %}
+            <a href="http://twitter.com/share?url={{ host }}{{ page_url }}&amp;text=Share%20your%20results&amp;hashtags=Netradar" target="_blank" title="{{ share_txt }} {{ service }}">
+              <img src="https://simplesharebuttons.com/images/somacro/twitter.png" alt="{{ share_txt }} {{ service }}"/>
+            </a>
+            {% endwith%}
+
+            {% with "facebook" as service %}
+            <a href="http://www.facebook.com/share.php?u={{ host }}{{ page_url }}" target="_blank" title="{{ share_txt }} {{ service }}">
+              <img src="https://simplesharebuttons.com/images/somacro/facebook.png" alt="{{ share_txt }} {{ service }}"/>
+            </a>
+            {% endwith %}
+            {% with "reddit" as service %}
+            <a href="http://reddit.com/submit?url={{ host }}{{ page_url }}&amp;t={{ title }}" target="_blank" title="{{ share_txt }} {{ service }}">
+              <img src="https://simplesharebuttons.com/images/somacro/reddit.png" alt="{{ share_txt }} {{ service }}"/>
+            </a>
+            {% endwith %}
+            {% endwith %}
+            {% endwith %}
+            {% endautoescape %}
+            </div>
+            </div>
+        </footer>
+{% endblock %}
