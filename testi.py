@@ -1,5 +1,8 @@
 import csv
 import operator
+from itertools import groupby
+from operator import itemgetter
+
 
 def calculateAverageDownlink(csvFileName):
 	with open(csvFileName) as testfile:
@@ -39,6 +42,41 @@ def getHighestDownlinkWithDevice(csvFileName):
 	
 	return sortedList[0][0] + " " + str(sortedList[0][1])
 	csvFile.close
+
+def getBestAveragePhone(csvFileName):
+	with open(csvFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		reader.next()
+		collected = []
+		for row in reader:
+			collected.append((row[2] + " " + row[3], float(row[15])))
+		sortedList = sorted(collected, key=lambda tup: tup[0], reverse = True) 
+		count = 0
+		counted = 0
+		averageDownlink = 0
+		vendor = ""
+		holder = []	
+		vendorIndex = 0		
+		for key, group in groupby(sortedList, lambda x: x[0]):
+			for row in group:
+				vendor = row[0]
+				count += 1
+				counted += row[1]
+			vendorIndex += 1
+			holder.append((vendor, counted/count))			
+			counted = 0
+			count = 0
+			#print holder
+	best = max(holder, key=itemgetter(1))
+	return best[0] + " " + str(best[1])
+	csvFile.close
+
+
+
+
+
+
+
 
 	
 
