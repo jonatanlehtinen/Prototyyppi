@@ -6,10 +6,10 @@ from operator import itemgetter
 
 def calculateAverageDownlink(csvFileName):
 	with open(csvFileName) as testfile:
-		target = open('kohde.csv', 'w')
+		#target = open('kohde.csv', 'w')
 		reader = csv.reader(testfile)
-		writer = csv.writer(target)
-		reader.next()
+		#writer = csv.writer(target)
+		next(reader)
 		count = 0
 		allDowns = 0.0
 		for row in reader:
@@ -19,14 +19,13 @@ def calculateAverageDownlink(csvFileName):
 		#writer.writerow(["Average downlink"])
 		#writer.writerow([allDowns/count])
 	
-	#teits
 	return str(allDowns/count) 
 	testfile.close
 
 def getHighestDownlinkWithDevice(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
-		reader.next()
+		next(reader)
 		collected = []
 		for row in reader:
 			collected.append((row[2] + " " + row[3], float(row[15])))
@@ -46,30 +45,40 @@ def getHighestDownlinkWithDevice(csvFileName):
 def getBestAveragePhone(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
-		reader.next()
+		next(reader)
 		collected = []
 		for row in reader:
 			collected.append((row[2] + " " + row[3], float(row[15])))
 		sortedList = sorted(collected, key=lambda tup: tup[0], reverse = True) 
 		count = 0
 		counted = 0
-		averageDownlink = 0
 		vendor = ""
 		holder = []	
-		vendorIndex = 0		
 		for key, group in groupby(sortedList, lambda x: x[0]):
 			for row in group:
 				vendor = row[0]
 				count += 1
 				counted += row[1]
-			vendorIndex += 1
 			holder.append((vendor, counted/count))			
 			counted = 0
 			count = 0
-			#print holder
+
 	best = max(holder, key=itemgetter(1))
 	return best[0] + " " + str(best[1])
 	csvFile.close
+
+
+def getDataFromDate(date, cvsFileName):
+	with open(cvsFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		next(reader)	
+		filteredList = filter(lambda x: x[0][:10] == date, list(reader))
+	csvFile.close	
+	return filteredList
+	
+
+
+
 
 
 
