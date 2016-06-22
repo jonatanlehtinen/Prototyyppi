@@ -9,5 +9,8 @@ def home(request):
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
+@login_required(login_url='/login/')
+def mydata(request):
+
 def pong(request):
     return render(request, "pong.html")
