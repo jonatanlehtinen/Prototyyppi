@@ -23,4 +23,5 @@ urlpatterns = [
     url(r'^polls/', views.index),
     url(r'^admin/', admin.site.urls),
     url(r'^pong/', views.pong),
+    url("^soc/", include("social.apps.django_app.urls", namespace="social")),
 ]
