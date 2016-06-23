@@ -1,6 +1,7 @@
 import csv
 import operator
 from itertools import groupby
+from operator import itemgetter
 
 
 def getAverageDownlink(csvFileName):
@@ -14,8 +15,9 @@ def getAverageDownlink(csvFileName):
 			if row[downlinkIndex]:	
 				count += 1
 				allDowns += float(row[downlinkIndex])
-	return str(allDowns/count) 
-	testfile.close
+	testfile.close	
+	return allDowns/count
+
 
 def getHighestDownlinkWithDevice(csvFileName):
 	with open(csvFileName) as csvFile:
@@ -45,14 +47,15 @@ def getBestAveragePhone(csvFileName):
 		sortedList = sorted(collected, key=lambda tup: tup[0], reverse = True)	
 		count = 0
 		counted = 0
-		vendor = ""
 		holder = []	
 		for key, group in groupby(sortedList, lambda x: x[0]):
+			#print (key)
+			print (",".join(str(list(group)[0][1])))
 			for row in group:
-				vendor = row[0]
+				print (row)
 				count += 1
 				counted += row[1]
-			holder.append((vendor, counted/count))			
+			holder.append((key, counted/count))			
 			counted = 0
 			count = 0
 
@@ -79,16 +82,18 @@ def getBestByPostalcode(postalcode, csvFileName):
 		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
 		collected = []
 		for row in reader:
-			print (row[47])
 			if row[47] == postalcode:
 				collected.append((row[vendorIndex], row[modelIndex], float(row[downlinkIndex])))
 		sortedList = sorted(collected, key=lambda x: x[2], reverse = True)
-		with open("csvfiletest.csv", "w") as newcsvfile:
+		header = (["3-vendor", "4-model", "16-downlink"])	
+		createCSV(header, sortedList)
+		'''with open("csvfiletest.csv", "w") as newcsvfile:
 			writer = csv.writer(newcsvfile)	
 			writer.writerow(["3-vendor", "4-model", "16-downlink"])	
 			for row in sortedList:
 				writer.writerow([row[0], row[1], row[2]])
 		newcsvfile.close
+		'''
 	csvFile.close
 	return getBestAveragePhone("csvfiletest.csv")
 		
@@ -101,7 +106,12 @@ def getIndexOfColumn(csvFileName, wantedColumn):
 	return index
 
 
-
+def createCSV(header, data):
+	with open("csvfiletest.csv", "w") as newcsvfile:
+		writer = csv.writer(newcsvfile)
+		writer.writerow(header)
+		writer.writerows(data)
+	  
 
 
 
