@@ -38,7 +38,21 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'paja',
+    'social.apps.django_app.default',
 ]
+
+AUTHENCICATION_BACKENDS = (
+    'social_auth.backends.google.GoogleOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+GOOGLE_OAUTH2_CLIENT_ID = os.environ['74900717570-riguqh43frb1602k784t9f59j44l9oti.apps.googleusercontent.com']
+GOOGLE_OAUTH2_CLIENT_SECRET = os.environ['ni5XuFxCjPdxwaJ4a9ICZngw']
+GOOGLE_WHITE_LISTED_DOMAINS = ['mygoogleappsdomain.com']
+SOCIAL_AUTH_USER_MODEL = 'auth.User'
+
+LOGIN_REDIRECT_URL = '/'
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
