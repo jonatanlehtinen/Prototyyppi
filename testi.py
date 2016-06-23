@@ -1,54 +1,43 @@
 import csv
 import operator
 from itertools import groupby
-from operator import itemgetter
 
 
-def calculateAverageDownlink(csvFileName):
+def getAverageDownlink(csvFileName):
 	with open(csvFileName) as testfile:
-		#target = open('kohde.csv', 'w')
 		reader = csv.reader(testfile)
-		#writer = csv.writer(target)
+		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
 		next(reader)
 		count = 0
 		allDowns = 0.0
 		for row in reader:
-			if row[15]:	
+			if row[downlinkIndex]:	
 				count += 1
-				allDowns += float(row[15])
-		#writer.writerow(["Average downlink"])
-		#writer.writerow([allDowns/count])
-	
+				allDowns += float(row[downlinkIndex])
 	return str(allDowns/count) 
 	testfile.close
 
 def getHighestDownlinkWithDevice(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
+		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
+		modelIndex = getIndexOfColumn(csvFileName, "4-model")
+		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
 		next(reader)
 		collected = []
 		for row in reader:
-			collected.append((row[2] + " " + row[3], float(row[15])))
-		sortedList = sorted(collected, key=lambda tup: tup[1], reverse = True)
-		#sortedlist = sorted(reader, key=operator.itemgetter(15), reverse=True)
-		#for row in sortedlist:
-			#print row[3] + "  " + row[15]		
-		#device = ""
-		#for row in reader: 			
-		#	if (row[15] and (float(row[15]) > currentBest)):
-		#		currentBest = float(row[15])
-		#		device = row[2] + " " + row[3]			
-	
+			collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))
+		sortedList = sorted(collected, key=lambda tup: tup[1], reverse = True)		
 	return sortedList[0][0] + " " + str(sortedList[0][1])
 	csvFile.close
 
 def getBestAveragePhone(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
+		next(reader)
 		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
 		modelIndex = getIndexOfColumn(csvFileName, "4-model")
 		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
-		next(reader)
 		sortedList = []
 		collected = []
 		for row in reader:
@@ -68,15 +57,16 @@ def getBestAveragePhone(csvFileName):
 			count = 0
 
 	best = max(holder, key=itemgetter(1))
-	return best[0] + " " + str(best[1])
 	csvFile.close
+	return best[0] + " " + str(best[1])
+	
 
-
-def getDataFromDate(date, cvsFileName):
-	with open(cvsFileName) as csvFile:
+def getDataFromDate(date, csvFileName):
+	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
+		dateIndex = getIndexOfColumn(csvFileName, "1-startedAt")
 		next(reader)	
-		filteredList = filter(lambda x: x[0][:10] == date, list(reader))
+		filteredList = filter(lambda x: x[dateIndex][:10] == date, list(reader))
 	csvFile.close	
 	return filteredList
 
@@ -84,10 +74,14 @@ def getBestByPostalcode(postalcode, csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
 		next(reader)
+		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
+		modelIndex = getIndexOfColumn(csvFileName, "4-model")
+		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
 		collected = []
 		for row in reader:
+			print (row[47])
 			if row[47] == postalcode:
-				collected.append((row[2], row[3], float(row[15])))
+				collected.append((row[vendorIndex], row[modelIndex], float(row[downlinkIndex])))
 		sortedList = sorted(collected, key=lambda x: x[2], reverse = True)
 		with open("csvfiletest.csv", "w") as newcsvfile:
 			writer = csv.writer(newcsvfile)	
