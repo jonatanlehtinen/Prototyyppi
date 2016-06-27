@@ -25,13 +25,16 @@ def getHighestDownlinkWithDevice(csvFileName):
 		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
 		modelIndex = getIndexOfColumn(csvFileName, "4-model")
 		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
+		techTypeIndex = getIndexOfColumn(csvFileName, "26-radiotype")
 		next(reader)
 		collected = []
 		for row in reader:
-			collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))
+			if row[vendorIndex] and row[modelIndex] and row[downlinkIndex] and row[techTypeIndex] == "cell":
+				collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))
 		sortedList = sorted(collected, key=lambda tup: tup[1], reverse = True)		
 	return sortedList[0][0] + " " + str(sortedList[0][1])
 	csvFile.close
+
 
 def getBestAveragePhone(csvFileName):
 	with open(csvFileName) as csvFile:
@@ -40,19 +43,17 @@ def getBestAveragePhone(csvFileName):
 		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
 		modelIndex = getIndexOfColumn(csvFileName, "4-model")
 		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
-		sortedList = []
+		radioTypeIndex = getIndexOfColumn(csvFileName, "26-radiotype")
 		collected = []
 		for row in reader:
-			collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))
+			if row[vendorIndex] and row[modelIndex] and row[downlinkIndex] and row[radioTypeIndex] == "cell":
+				collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))		
 		sortedList = sorted(collected, key=lambda tup: tup[0], reverse = True)	
 		count = 0
 		counted = 0
 		holder = []	
 		for key, group in groupby(sortedList, lambda x: x[0]):
-			#print (key)
-			print (",".join(str(list(group)[0][1])))
 			for row in group:
-				print (row)
 				count += 1
 				counted += row[1]
 			holder.append((key, counted/count))			
@@ -73,6 +74,7 @@ def getDataFromDate(date, csvFileName):
 	csvFile.close	
 	return filteredList
 
+
 def getBestByPostalcode(postalcode, csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
@@ -80,20 +82,14 @@ def getBestByPostalcode(postalcode, csvFileName):
 		vendorIndex = getIndexOfColumn(csvFileName, "3-vendor")
 		modelIndex = getIndexOfColumn(csvFileName, "4-model")
 		downlinkIndex = getIndexOfColumn(csvFileName, "16-downlink")
+		radioTypeIndex = getIndexOfColumn(csvFileName, "26-radiotype")
 		collected = []
 		for row in reader:
-			if row[47] == postalcode:
-				collected.append((row[vendorIndex], row[modelIndex], float(row[downlinkIndex])))
+			if row[47] and row[47] == postalcode and row[vendorIndex] and row[modelIndex] and row[downlinkIndex] and row[radioTypeIndex] == "cell":
+				collected.append((row[vendorIndex], row[modelIndex], float(row[downlinkIndex]), "cell"))
 		sortedList = sorted(collected, key=lambda x: x[2], reverse = True)
-		header = (["3-vendor", "4-model", "16-downlink"])	
+		header = (["3-vendor", "4-model", "16-downlink", "26-radiotype"])	
 		createCSV(header, sortedList)
-		'''with open("csvfiletest.csv", "w") as newcsvfile:
-			writer = csv.writer(newcsvfile)	
-			writer.writerow(["3-vendor", "4-model", "16-downlink"])	
-			for row in sortedList:
-				writer.writerow([row[0], row[1], row[2]])
-		newcsvfile.close
-		'''
 	csvFile.close
 	return getBestAveragePhone("csvfiletest.csv")
 		
