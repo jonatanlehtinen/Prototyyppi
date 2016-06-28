@@ -15,7 +15,6 @@ def getAverageDownlink(csvFileName):
 			if row[downlinkIndex]:	
 				count += 1
 				allDowns += float(row[downlinkIndex])
-	testfile.close	
 	return allDowns/count
 
 
@@ -33,7 +32,6 @@ def getHighestDownlinkWithDevice(csvFileName):
 				collected.append((row[vendorIndex] + " " + row[modelIndex], float(row[downlinkIndex])))
 		sortedList = sorted(collected, key=lambda tup: tup[1], reverse = True)		
 	return sortedList[0][0] + " " + str(sortedList[0][1])
-	csvFile.close
 
 
 def getBestAveragePhone(csvFileName):
@@ -61,7 +59,6 @@ def getBestAveragePhone(csvFileName):
 			count = 0
 
 	best = max(holder, key=itemgetter(1))
-	csvFile.close
 	return best[0] + " " + str(best[1])
 	
 
@@ -71,7 +68,6 @@ def getDataFromDate(date, csvFileName):
 		dateIndex = getIndexOfColumn(csvFileName, "1-startedAt")
 		next(reader)	
 		filteredList = filter(lambda x: x[dateIndex][:10] == date, list(reader))
-	csvFile.close	
 	return filteredList
 
 
@@ -90,7 +86,6 @@ def getBestByPostalcode(postalcode, csvFileName):
 		sortedList = sorted(collected, key=lambda x: x[2], reverse = True)
 		header = (["3-vendor", "4-model", "16-downlink", "26-radiotype"])	
 		createCSV(header, sortedList)
-	csvFile.close
 	return getBestAveragePhone("csvfiletest.csv")
 		
 
@@ -98,7 +93,6 @@ def getIndexOfColumn(csvFileName, wantedColumn):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
 		index = list(reader)[0].index(wantedColumn)
-	csvFile.close
 	return index
 
 
@@ -109,7 +103,15 @@ def createCSV(header, data):
 		writer.writerows(data)
 	  
 
-
+def getDataFromPostalCode(code, csvFileName):
+	with open(csvFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		collected = []
+		for row in reader:
+			if str(row[0]) == code:
+				print("ssdg")
+				collected.append(row)
+		print (collected)
 
 
 
