@@ -18,22 +18,26 @@ def getTheBestOperator(code, csvFileName):
 				return max(data, key=itemgetter(5))[2]
 			else:
 				data = addSpeedForOperatorsForTopSpeed(data)
-			addSpeedForOperators(data)
 		else:
-			return max(data, key=itemgetter(5))[2]		
+			return max(data, key=itemgetter(5))[2]	
+	
 
 
-def addSpeedForOperatorsForTopSpeed:
+def addSpeedForOperatorsForTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5))
 	newData = []
-		if highestDownlink[4] * 3 < row[4]:
-			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 3000, row[6]))
+	for row in data:
+		print(row)
+		if highestDownlink[6] + 5000 < row[6]:
+			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 2000, row[6]))
 		else:
 			newData.append(row)
+	for row in newData:
+		print(row)
 	return newData
 
 
-def hasHighestDownlinkAndTopSpeed:
+def hasHighestDownlinkAndTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5)) 
 	highestTopSpeed = max(data, key=itemgetter(6))
 	return highestDownlink[2] == mostMeasurements[2]
@@ -41,6 +45,7 @@ def hasHighestDownlinkAndTopSpeed:
 def addSpeedForOperatorsForMeasurements(data):
 	highestDownlink = max(data, key=itemgetter(5))
 	newData = []
+	for row in data:
 		if highestDownlink[4] * 3 < row[4]:
 			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 3000, row[6]))
 		else:
