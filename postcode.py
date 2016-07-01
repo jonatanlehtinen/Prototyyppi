@@ -8,6 +8,16 @@ def getTheBestOperator(code, csvFileName):
 	data = getDataFromPostalCodeAndYear(code, "2016", csvFileName)
 	data = convertDatasStringToIntOrFloat(data)
 	if hasEnoughMeasurements(data):
+		'''
+		for row in data:
+			print(row)
+		calculateBestOperator(data)
+		for row in data:
+			print(row)
+		'''
+		return calculateBestOperator(data)
+		
+		'''
 		if isBigDifferencesInMeasurements(data):
 			if hasMostMeasurementsAndHighestDownlink(data):
 				return max(data, key=itemgetter(5))[2]
@@ -18,10 +28,64 @@ def getTheBestOperator(code, csvFileName):
 				return max(data, key=itemgetter(5))[2]
 			else:
 				data = addSpeedForOperatorsForTopSpeed(data)
+				return max(data, key=itemgetter(5))[2]
 		else:
 			return max(data, key=itemgetter(5))[2]	
-	
+		'''
+	else:
+		print("ei tarpeeks")	
+		data2 = getDataFromPostalCodeAndYear(code, "2015", csvFileName)
+		data2 = convertDatasStringToIntOrFloat(data2)
+		firstBest = calculateBestOperator(data)
+		secondBest = calculateBestOperator(data2)
+		if firstBest == secondBest:
+			return max(data, key=itemgette(5))[2]
+		else: 
+			return getBestOperatorFromTwoYearByMeasurements(data, data2, firstBest, secondBest)
 
+
+def getBestOperatorFromTwoYearByMeasurements(data, data2, firstBest, secondBest):
+	firstMeasurements = 0
+	secondMeasurements = 0	
+	for row in data:
+		if row[2] == firstBest:
+			firstMeasurements = int(row[4])
+	for row in data2:
+		if row[2] == secondBest:
+			secondMeasurements = int(row[4])
+
+	if firstMeasurements > secondMeasurements:
+		return firstBest
+	elif secondMeasurements > firstMeasurements:
+		return secondBest
+	else:
+		return "Tie between" + firstBest + " and " + secondBest
+
+
+def calculateBestOperator(data):
+	if hasMostMeasurementsAndHighestDownlink(data):
+		return max(data, key=itemgetter(5))[2]
+	else:
+		data = addSpeedForOperatorsForMeasurements(data)
+		data = addSpeedForOperatorsForTopSpeed(data)
+		return max(data, key=itemgetter(5))[2]
+
+'''
+def calculateBestOperator(data):
+	if isBigDifferencesInMeasurements(data):
+		if hasMostMeasurementsAndHighestDownlink(data):
+			return max(data, key=itemgetter(5))[2]
+		else:
+			data = addSpeedForOperatorsForMeasurements(data)
+	if isBigDifferenceInTopSpeed(data):
+		if hasHighestDownlinkAndTopSpeed:
+			return max(data, key=itemgetter(5))[2]
+		else:
+			data = addSpeedForOperatorsForTopSpeed(data)
+			return max(data, key=itemgetter(5))[2]
+	else:
+		return max(data, key=itemgetter(5))[2]	
+'''
 
 def addSpeedForOperatorsForTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5))
