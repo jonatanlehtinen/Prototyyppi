@@ -2,38 +2,40 @@ import csv
 import operator
 from itertools import groupby
 from operator import itemgetter
+import mysql.connector as mariadb
 
+
+def getFromDataBase(code):
+	try:
+		mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
+		cursor = mariadb_connection.cursor()
+		cursor.execute("SELECT postcode, year, operator, downloadMeasurements, averageDownload, topDownload, averageUpload, topUpload FROM testicsv WHERE postcode=%s", (code,))
+		mariadb_connection.close()
+		return list(cursor)
+	except:
+		print("Couldn't create database connection")
+		return []
+
+		
 
 def getTheBestOperator(code, csvFileName):
-	data = getDataFromPostalCodeAndYear(code, "2016", csvFileName)
+	data = getFromDataBase(code)
+	operators = []
+	for row in data:
+		operators.append(row[2])
+	operators = set(operators)
+	for row in operators:
+		print (row)
+	operators = dict.fromkeys(operators,0.0)
+	print (operators["DNA"])
+	operators["DNA"] = operators["DNA"] + 2
+	operators["DNA"] = operators["DNA"] + 2
+	print (operators)
 	data = convertDatasStringToIntOrFloat(data)
 	if hasEnoughMeasurements(data):
-		'''
-		for row in data:
-			print(row)
-		calculateBestOperator(data)
-		for row in data:
-			print(row)
-		'''
 		return calculateBestOperator(data)
-		
-		'''
-		if isBigDifferencesInMeasurements(data):
-			if hasMostMeasurementsAndHighestDownlink(data):
-				return max(data, key=itemgetter(5))[2]
-			else:
-				data = addSpeedForOperatorsForMeasurements(data)
-		if isBigDifferenceInTopSpeed(data):
-			if hasHighestDownlinkAndTopSpeed:
-				return max(data, key=itemgetter(5))[2]
-			else:
-				data = addSpeedForOperatorsForTopSpeed(data)
-				return max(data, key=itemgetter(5))[2]
-		else:
-			return max(data, key=itemgetter(5))[2]	
-		'''
+	
 	else:
-		print("ei tarpeeks")	
 		data2 = getDataFromPostalCodeAndYear(code, "2015", csvFileName)
 		data2 = convertDatasStringToIntOrFloat(data2)
 		firstBest = calculateBestOperator(data)
@@ -91,13 +93,10 @@ def addSpeedForOperatorsForTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5))
 	newData = []
 	for row in data:
-		print(row)
 		if highestDownlink[6] + 5000 < row[6]:
 			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 2000, row[6]))
 		else:
 			newData.append(row)
-	for row in newData:
-		print(row)
 	return newData
 
 
@@ -118,20 +117,24 @@ def addSpeedForOperatorsForMeasurements(data):
 
 def hasMostMeasurementsAndHighestDownlink(data):
 	highestDownlink = max(data, key=itemgetter(5)) 
-	mostMeasurements = max(data, key=itemgetter(4))
-	return highestDownlink[2] == mostMeasurements[2]
+	sortedByMeasurements = sorted(data, key=lambda x: x[4], reverse=True)
+	mostMeasurements = max(data, key=itemgetter(5)) 
+	if sortedByMeasurements[1][4] * 3 < sortedByMeasurements[0][4] and highestDownlink[2] == mostMeasurements[2]:
+		return True
+	else:
+		return False
+
+
+
+				
 
 
 def addSpeedForOperators(data):
 	highestSpeed = max(data, key=itemgetter(6)) 
 	newData = []
 	for row in data:
-		print(row)
 		if row[6] + 5 < highestSpeed[6]:
 			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 3000, row[6]))
-		 
-	for row in newData:
-		print(row)
 	return data
  
 def isBigDifferenceInTopSpeed(data):
@@ -150,7 +153,7 @@ def isBigDifferencesInMeasurements(data):
 def convertDatasStringToIntOrFloat(data):
 	converted = []
 	for row in data:
-		converted.append((row[0], row[1], row[2], row[3], int(row[4]), float(row[5]), float(row[6])))
+		converted.append((row[0], row[1], row[2], int(row[3]), float(row[4]), float(row[5]), float(row[6]), float(row[7])))
 	return converted		
 
 
@@ -202,19 +205,49 @@ def getDataFromPostalCodeAndYear(code, year, csvFileName):
 				collected.append(row)
 	return collected
 	
-'''
+
 def removeFalseRows(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
-		with open("correctpostcodecsv.csv", "w") as newCSV:
+		with open("correctpostcodecsv1.csv", "w") as newCSV:
 			writer = csv.writer(newCSV)
 			for row in reader:
 				if row[2] != "undefined":
 					writer.writerow(row)
-'''					
 
 
+def testRead(csvFileName):
+	with open(csvFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		print(next(reader))
+		print(next(reader))
+	
 '''
+def getData(data):
+	with open("correctpostcodecsv.csv") as csvFile:
+		reader = csv.reader(csvFile)
+		returnValue = []
+		for row in reader:
+			if row[0] == data[0] and row[1] == data[1]  and row[2]==data[2]:
+				returnValue = [row[4], row[5], row[6]] 
+	return returnValue
+		
+	
+
+		
+def createOfficialCSV(csvFileName):
+	with open(csvFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		next(reader)
+		with open("mycsv1.csv", "w") as mycsv:
+			writer = csv.writer(mycsv)
+			for row in reader:
+				dataToAdd = getData(row)
+				writer.writerow(row + dataToAdd)
+				
+				
+
+
 def createBettercsv(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
@@ -232,6 +265,7 @@ def createBettercsv(csvFileName):
 					writer.writerow(row)
 
 '''
+
 
 
 
