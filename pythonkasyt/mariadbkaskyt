@@ -1,0 +1,10 @@
+
+#creates table for data, all attributes are strings
+
+CREATE TABLE correctpostcode (postcode varchar(50) NOT NULL,year varchar(50) NOT NULL,operator varchar(50) NOT NULL,operatorID varchar(50),downloadMeasurements varchar(50),averageDownload varchar(50),topDownload varchar(50),uploadMeasurements varchar(50),averageUpload varchar(50),topUpload varchar(50),PRIMARY KEY(postcode, year, operator));
+
+
+#loads wanted csv file to wanted table
+
+LOAD DATA LOCAL INFILE '/home/joppe/mycsv1_2.csv' INTO TABLE correctpostcode FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
