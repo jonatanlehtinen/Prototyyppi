@@ -19,9 +19,15 @@ from django.contrib import admin
 from paja import views
 
 urlpatterns = [
-    url(r'^$', views.home),
-    url(r'^polls/', views.index),
+#    url(r'^$', views.home),
     url(r'^admin/', admin.site.urls),
     url(r'^pong/', views.pong),
-    url("^soc/", include("social.apps.django_app.urls", namespace="social")),
+    url(r'^soc/', include("social.apps.django_app.urls", namespace="social")),
+    url(r'^mydata/', views.mydata_view),
+    url(r'^login/', views.login),
+    url(r'^register/', views.register_view),
+#    url(r'^oauth2/', include('provider.oauth2.urls', namespace = 'oauth2')),
+    url(r'^complete/(?P<backend>[^/]+)/$', AuthComplete.as_view()),
+    url(r'^login-error/$', LoginError.as_view()),
+    url(r'', include('social_auth.urls')),
 ]

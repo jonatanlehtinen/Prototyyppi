@@ -3,18 +3,23 @@
         <nav>
             <ul id="navone">
             <li><a href="/">Netradar</a></li>
-            </ul>
-            <ul id="navtwo">
+            <li><a href="/mydata">Mydata</a></li>
               {% if user.is_authenticated %}
               <li><a>Hey, {{ user.username }}.</a></li>
-              <li><a href="/pong">Store</a></li>
-              <li><a href="/account">Account</a></li>
+              <li><a href="/mydata">MyData</a></li>
               <li><a href="/logout">Logout</a></li>
               {% else %}
-              <li><a href="/login">Login</a></li>
-              <li><a href="/register">Register</a></li>
+              <li style="float-right"><a href="/login">Login</a></li>
               {% endif %}
             </ul>
+            </li>
         </nav>
+        {% load staticfiles %}
+        <a href="/">
+        <img src="{% static "netradar_logo.jpg" %}" class ="stretch" alt="Netradar_logo"/>
+        </a>
+        <br>
+        <br>
+        <br>
 </header>
 {% endblock %}

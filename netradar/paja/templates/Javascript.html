@@ -1,0 +1,92 @@
+<script type='text/javascript' src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type='text/javascript' src="//apis.google.com/js/client.js?onload=apiLoaded" async></script>
+<script type='text/javascript'>
+    var clientId = '*************-********************************.apps.googleusercontent.com';
+    var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/userinfo.email'];
+
+    var loaded = false;
+    var auth = null;
+
+    function apiLoaded() {
+      loaded = true;
+      login();
+    }
+
+    window._open = window.open;
+    window._windows = [];
+    window.open = function(url) {
+      var w = window._open.apply(window,arguments);
+      window._windows.push(w);
+      return w;
+    }
+
+    function login(step) {
+      step || (step = 0);
+      if (!loaded) {
+        return;
+      }
+      gapi.auth.authorize({client_id: clientId, scope: scopes, immediate: (step <= 0 || step >= 2) }, function(authResult) {
+        if (authResult) {
+          if (authResult.error) {
+            if (authResult.error == 'immediate_failed' && authResult.error_subtype == 'access_denied' && step <= 0) {
+              var interval = setInterval(function() {
+                var $ifr = $('iframe');//[id^=oauth2relay]');
+                if (!window._windows.length) {
+                  clearInterval(interval);
+                  return;
+                }
+                if ($ifr.length) {
+                  clearInterval(interval);
+                  $ifr.detach();
+                  var w = window._windows.pop();
+                  if (w) {
+                    var interval2 = setInterval(function() {
+                      if (w.closed) {
+                        clearInterval(interval2);
+                        $('body').append($ifr);
+                        login(2);
+                      }
+                    });
+                  } else {
+                    $('body').append($ifr);
+                  }
+                }
+              },500);
+              login(1);
+            } else if (authResult.error == 'immediate_failed' && authResult.error_subtype == 'access_denied' && step >= 2) {
+              //user canceled auth
+            } else {
+              //error
+            }
+          } else {
+            auth = authResult;
+            doPost('test', { some: 'data' }, 'test');
+          }
+        } else {
+          //error
+        }
+      });
+    }
+
+    function test() {
+      console.log(arguments);
+    }
+
+    //with this method you can do a post request to webapp server
+    function doPost(method, data, callbackName) {
+      data || (data = {});
+      google.script.run.withSuccessHandler(onSuccess).withFailureHandler(onError).withUserObject({ callback: callbackName }).doPost({ method: method, data: data, auth: auth });
+    }
+
+    function onSuccess(data, meta) {
+      if (typeof window[meta.callback] == 'function') {
+        window[meta.callback](null, data);
+      }
+    }
+
+    function onError(err, meta) {
+      if (typeof window[meta.callback] == 'function') {
+        window[meta.callback](err);
+      }
+    }
+</script>

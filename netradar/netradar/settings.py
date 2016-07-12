@@ -39,17 +39,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'paja',
     'social.apps.django_app.default',
+#    'provider',
+#    'provider.oauth2',
 ]
 
 AUTHENCICATION_BACKENDS = (
-    'social_auth.backends.google.GoogleOAuth2',
+    'social.backends.open_id.OpenIdAuth',
+    'social.backends.google.GoogleOpenId',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.google.GoogleOAuth',
     'django.contrib.auth.backends.ModelBackend',
+    'google_auth.backends.GoogleAppsBackend',
 )
 
 
-GOOGLE_OAUTH2_CLIENT_ID = os.environ['74900717570-riguqh43frb1602k784t9f59j44l9oti.apps.googleusercontent.com']
-GOOGLE_OAUTH2_CLIENT_SECRET = os.environ['ni5XuFxCjPdxwaJ4a9ICZngw']
-GOOGLE_WHITE_LISTED_DOMAINS = ['mygoogleappsdomain.com']
+GOOGLE_OAUTH2_CLIENT_ID = os.environ['186251071495-6nb58fo99kkhf7mf2ec381btg4roo5a5.apps.googleusercontent.com']
+GOOGLE_OAUTH2_CLIENT_SECRET = os.environ['WxlIMjfKxcbRBUktl7bhZoto']
+#GOOGLE_WHITE_LISTED_DOMAINS = ['incuna.com']
 SOCIAL_AUTH_USER_MODEL = 'auth.User'
 
 LOGIN_REDIRECT_URL = '/'

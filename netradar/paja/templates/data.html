@@ -1,0 +1,20 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html"; charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimium-scale=1.0, maxium-scale=1.0" />
+        <title>Netradar {{ request.name }}</title>
+        <link rel="stylesheet" type="text/css">
+        <link rel="stylesheet" type="text/css" href="{% static 'basecss.css' %}">
+        <link href='http://fonts.googleapis.com/css?family=Crete+Round' rel="stylesheet" type="text/css">
+        <script src="lib/jquery-1.11.3.min.js"></script>
+    </head>
+{% block header %}
+{% include "header.html" %}
+{% endblock %}
+<!-- <div class="banner"></div> -->
+<iframe src=https://netradar.org></iframe>
+{% block footer %}
+{% include "footer.html" %}
+{% endblock %}
+</html>
