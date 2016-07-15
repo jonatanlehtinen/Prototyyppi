@@ -96,7 +96,6 @@ def calculateAveragesWeek(newData):
         for hour in range(0,25):
             counter = 0
             for line in data:
-                print(day,hour)
                 
                 if not averages and line[0].hour == hour and line[0].weekday() == day:
                     averages.append([])
@@ -124,8 +123,7 @@ def calculateAveragesWeek(newData):
                     averages[-1].append(line[4])
                     averages[-1].append(line[2])
                     counter += 1
-                    
-                
+                          
                 elif line[0].hour == hour and line[0].weekday() == day:
                     averages[-1][2] += line[3]
                     averages[-1][3] += line[4]
@@ -133,9 +131,9 @@ def calculateAveragesWeek(newData):
                     counter += 1
                     
             if counter:
-                print(averages[-1])
+              
                 averages[-1].append(counter)
-                print("asd", day, hour)
+               
               
     for valueSet in averages:
         valueSet[2] = valueSet[2] / valueSet[5]
