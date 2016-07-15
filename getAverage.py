@@ -7,6 +7,7 @@ import datetime
 def getFromDataBase(time, code, typeOfData, lengthOfTime):
      
     if typeOfData == 0:
+        print("asd")
         try:
         #Create connection to database
             mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
@@ -40,11 +41,11 @@ def getFromDataBase(time, code, typeOfData, lengthOfTime):
 
     
 def getAverages():
-    time = datetime.date(2016,4,4)
+    time = datetime.date(2016,6,14)
     code = "02150%"
     #typeOfData is used to store whether the user wants postal code, user id or something else.
     typeOfData = 0
-    lengthOfTime = -7
+    lengthOfTime = -1
     data = getFromDataBase(time, code, typeOfData, lengthOfTime)
     #.strftime("%Y-%m-%d %H:%M:%S")
     newData = [(item[0], item[1], item[2], item[3], item[4], item[5][:5]) for item in data]
@@ -60,11 +61,13 @@ def calculateAverages(newData):
     for hour in range(0,25):
         counter = 0
         for line in data:
+        
             if not averages and line[0] == hour:
                 averages.append([])
                 averages[-1].append(hour)
                 averages[-1].append(line[3])
                 averages[-1].append(line[4])
+                counter += 1
             elif line[0] == hour and hour not in [i[0] for i in averages]:
                 averages.append([])
                 averages[-1].append(hour)
@@ -73,11 +76,13 @@ def calculateAverages(newData):
                 counter += 1
             elif line[0] == hour:
                 averages[-1][1] += line[3]
-                averages[-1][1] += line[4]
+                averages[-1][2] += line[4]
                 counter += 1
+            
         if counter:
-            averages[-1][1] = averages[-1][1] / counter
+            averages[-1][1] = averages[-1][1] / counter  
             averages[-1][2] = averages[-1][2] / counter
+            
     return averages
     
 '''
