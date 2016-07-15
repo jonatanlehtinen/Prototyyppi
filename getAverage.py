@@ -1,7 +1,7 @@
 import mysql.connector as mariadb
 from _datetime import date, datetime
 import datetime
-from drawgraph import drawGraph
+#from drawgraph import drawGraph
 
 
 def getFromDataBase(time, code, typeOfData, lengthOfTime):
@@ -57,38 +57,6 @@ def getAverages():
 
     averages = calculateAverages(newData)
     print(averages)
-    
-def calculateAverages(newData):  
-    data = [(item[0].hour, item[1], item[2], item[3], item[4], item[5][:5]) for item in newData]
-    data.sort(key=lambda x: (x[0]))
-
-    averages = []
-    for hour in range(0,25):
-        counter = 0
-        for line in data:
-        
-            if not averages and line[0] == hour:
-                averages.append([])
-                averages[-1].append(hour)
-                averages[-1].append(line[3])
-                averages[-1].append(line[4])
-                counter += 1
-            elif line[0] == hour and hour not in [i[0] for i in averages]:
-                averages.append([])
-                averages[-1].append(hour)
-                averages[-1].append(line[3])
-                averages[-1].append(line[4])
-                counter += 1
-            elif line[0] == hour:
-                averages[-1][1] += line[3]
-                averages[-1][2] += line[4]
-                counter += 1
-            
-        if counter:
-            averages[-1][1] = averages[-1][1] / counter  
-            averages[-1][2] = averages[-1][2] / counter
-            
-    return averages
     
 def calculateAverages(newData):  
 	data = [(item[0].hour, item[1], item[2], item[3], item[4], item[5][:5]) for item in newData]
