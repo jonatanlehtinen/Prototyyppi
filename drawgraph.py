@@ -1,11 +1,53 @@
 import matplotlib.pyplot as plt
 import pylab
-import mysql.connector as mariadb
-import datetime
+import numpy as np
+from mpl_toolkits.basemap import Basemap
 
-def drawGraph():
 
-	data = getAverages()
+
+
+def createMap():
+	map = Basemap(projection='merc', lon_0=65, lat_0=27,
+	resolution = 'h', area_thresh = 0.1,
+	llcrnrlat=59.85, llcrnrlon=19.49,
+	urcrnrlat=70.35, urcrnrlon=31.48)
+	 
+	map.drawcountries()
+	map.fillcontinents(color='coral')
+	map.drawmapboundary()
+	lat = 60.45
+	lon = 22.27
+	#for row in data:
+		
+	x,y = map(lon, lat)
+	map.plot(x,y, 'bo', markersize = 4)
+	#map.drawmeridians(np.arange(0, 360, 30))
+	#map.drawparallels(np.arange(-90, 90, 30))
+	 
+	plt.show()
+
+
+def drawGraph2(data):
+	x = [1/24 * i[1] + 1 + i[0] for i in data]
+	y1 = [i[2] for i in data]
+	y2 = [i[3] for i in data]
+	print(x)
+	
+	fig1 = plt.figure()
+	ax1 = fig1.add_subplot(111)
+	ax1.plot(x, y1, color="red", marker = "o")
+	ax1.plot(x, y2, color = "blue")
+	
+	ax1.set_title("Otaniemen data 2016, viikottaiset keskiarvot tunnettain")
+	plt.xlabel("Day")
+	plt.ylabel("Speed(kbps)")
+	plt.show()
+	
+
+
+
+def drawGraph(data):
+
 	print(data)
 	x1 = [i[0] for i in data]
 	y1 = [i[1] for i in data]
@@ -31,7 +73,7 @@ def drawGraph():
 	ax.set_title("Otaniemen data 2016")
 	ax.text(int(minX+1), int(maxY+4000), "Red plot: download", fontsize=13)
 	ax.text(int(minX+1), int(maxY), "Blue plot: upload", fontsize=13)
-	plt.xlabel("Time")
+	plt.xlabel("Hour")
 	plt.ylabel("Speed(kbps)")
 	plt.show()
 
