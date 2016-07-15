@@ -2,7 +2,15 @@ import csv
 import operator
 from itertools import groupby
 from operator import itemgetter
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.basemap import Basemap
 
+# Lambert Conformal Conic map.
+def createMap():
+	m = Basemap(llcrnrlon=-100.,llcrnrlat=0.,urcrnrlon=-20.,urcrnrlat=57.,projection='lcc',lat_1=20.,lat_2=40.,lon_0=-60.,resolution
+='l',area_thresh=1000.)
+	m.show()
 
 def getAverageDownlink(csvFileName):
 	with open(csvFileName) as testfile:

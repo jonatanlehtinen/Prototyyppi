@@ -230,11 +230,19 @@ def calculateMeasurementAmountFactor(data, operator):
 	
 	if 1 / differences[0] + 0.4 > 1:
 		factorDown = 1
+
+	elif 1 / differences[0] + 0.4 < 0.7:
+		factorDown = 0.7
+
 	else:
 		factorDown = 1 / differences[0] + 0.4
 	
 	if 1 / differences[1] + 0.4 > 1:
 		factorUp = 1
+
+	elif 1 / differences[1] + 0.4 < 0.7:
+		factorUp = 0.7
+
 	else:
 		factorUp = 1 / differences[1] + 0.4
 	
@@ -245,6 +253,7 @@ def calculateMeasurementAmountFactor(data, operator):
 	return factors
 	
 def gradeOperators(data, operatorsPoints):
+
 	maxAverageDown = max([i[4] for i in data])
 	maxAverageUp = max([i[7] for i in data])
 	maxDown = max([i[5] for i in data])

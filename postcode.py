@@ -3,6 +3,32 @@ import operator
 from itertools import groupby
 from operator import itemgetter
 import mysql.connector as mariadb
+from reportlab.pdfgen import canvas
+import matplotlib.pyplot as plt
+from collections import Counter
+
+
+def getTheBestOperator(codes):
+	points = []
+	for code in codes:
+		pointsFromCode.append(calculatePointsFromCode(code))
+		for operator in pointsFromCode:
+			if operator not in [i[0] for i in points]:
+				points.append([operator, code, pointsFromCode[operator]])
+			else:
+				#index = 
+				print ("sadf")
+				
+			
+	if len(points) == 1:
+		return points[0]
+	else:
+		for point in points:
+			A = Counter(point)
+			B = Counter(point)
+		
+
+
 
 #Connect to database and return wanted data by postcode
 def getFromDataBase(code):
@@ -25,7 +51,7 @@ def getFromDataBase(code):
 Main method for calculating the best operator 
 from given parameter postcode
 '''
-def getTheBestOperator(code):
+def calculatePointsFromCode(code):
 	#Get data from database
 	data = getFromDataBase(code)
 	operators = []
@@ -205,6 +231,39 @@ def convertDatasStringToIntOrFloat(data):
 		converted.append((row[0], row[1], row[2], int(row[3]), float(row[4]), float(row[5]), int(row[6]), float(row[7]), float(row[8])))	
 	return converted	
 
+		
+
+def drawGraph():
+
+	x1 = [10,20,30,40]
+	y1 = [30,40,80,60]
+	x2 = [10,20,30,40]
+	y2 = [60,30,90,60]
+
+	maxY = max(y1+y2)
+	minY = min(y1+y2)
+	minX = min(x1+x2)
+	
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	ax.plot(x1,y1, color = "red")
+	ax.plot(x2,y2)
+	ax.grid(True)
+	plt.ylim(minY - 7,maxY + 7)
+	ax.text(minX+1, maxY+4, "Red plot: download", fontsize=13)
+	ax.text(minX+1, maxY, "Blue plot: upload", fontsize=13)
+	plt.xlabel("Time")
+	plt.ylabel("Speed(Mbps)")
+	plt.show()
+
+	plt.savefig("testi1.jpg")
+
+def pdfTesti():
+	c = canvas.Canvas("pdftestaus.pdf")
+	c.drawString(200,750,"Welcome to Reportlab!")
+	drawGraph()
+	c.drawImage("/home/joppe/Documents/Python/testi1.jpg", 0,400, width=300,height=300,mask=None) 
+	c.save()
 
 '''
 

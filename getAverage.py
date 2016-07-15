@@ -1,16 +1,18 @@
-'''
-Created on 20.6.2016
+
 
 @author: Lare
-'''
+
 import matplotlib.pyplot as plt
+=======
+
 import mysql.connector as mariadb
 from _datetime import date, datetime
 import datetime
 
-
+'''
 def getFromDataBase(time, code, typeOfData, lengthOfTime):
      
+
 	if typeOfData == 0:
 		#try:
 		#Create connection to database
@@ -28,13 +30,15 @@ def getFromDataBase(time, code, typeOfData, lengthOfTime):
 		#    return []
 '''   
 	if typeOfData == 1:
+
+    if typeOfData == 0:
         try:
-            #Create connection to database
-            mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='Otaniemi')
+        #Create connection to database
+            mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
             cursor = mariadb_connection.cursor()
             
             #Query for right data
-            cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemitesti3 WHERE DATEDIFF(%s,startedAt)<%s AND uid LIKE %s", (time,lengthOfTime,code,))
+            cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemidata WHERE startedAt BETWEEN adddate(%s,%s) AND %s AND postalcode LIKE %s AND radiotype='cell'", (time,lengthOfTime, time,code,))
             mariadb_connection.close()
             
             #return list including fetched data
@@ -42,7 +46,26 @@ def getFromDataBase(time, code, typeOfData, lengthOfTime):
         except:
             print("Couldn't create database connection")
             return []
-'''
+   
+    if typeOfData == 1:
+        try:
+            #Create connection to database
+            mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='Otaniemi')
+            cursor = mariadb_connection.cursor()
+            
+            #Query for right data
+            cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemitesti3 WHERE DATEDIFF(%s,startedAt)<%s AND uid LIKE %s", (time,lengthOfTime,code,))
+
+            cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemidata WHERE startedAt BETWEEN adddate(%s,%s) AND %s AND uid LIKE %s", (time,lengthOfTime,code,))
+
+            mariadb_connection.close()
+            
+            #return list including fetched data
+            return list(cursor)
+        except:
+            print("Couldn't create database connection")
+            return []
+
     
 def getAverages():
     time = datetime.date(2016,6,13)
