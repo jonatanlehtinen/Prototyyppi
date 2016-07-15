@@ -45,8 +45,8 @@ def getAverages():
     code = "02150%"
     #typeOfData is used to store whether the user wants postal code, user id or something else.
     typeOfData = 0
-    resolution = 4
-    lengthOfTime = -30
+    resolution = 2
+    lengthOfTime = -7
     data = getFromDataBase(time, code, typeOfData, lengthOfTime)
     #.strftime("%Y-%m-%d %H:%M:%S")
     newData = [(item[0], item[1], item[2], item[3], item[4], item[5][:5]) for item in data]
@@ -92,54 +92,35 @@ def calculateAveragesWeek(newData,resolution):
     data.sort(key=lambda x: (x[0]))
 
     averages = []
-    for day in range (0,7):
-        for hour in range(0,25):
-            counter = 0
-            for line in data:
-                
-                if not averages and line[0].hour == hour and line[0].weekday() == day:
-                    averages.append([])
-                    averages[-1].append(day)
-                    averages[-1].append(hour)
-                    averages[-1].append(line[3])
-                    averages[-1].append(line[4])
-                    averages[-1].append(line[2])
-                    counter += 1
-                elif averages and line[0].weekday() == day and day not in [i[0] for i in averages]:
-                    averages.append([])                
-                    averages[-1].append(day)
-                    averages[-1].append(hour)
-                    averages[-1].append(line[3])
-                    averages[-1].append(line[4])
-                    averages[-1].append(line[2])
-                    counter += 1
-                elif averages and line[0].hour == hour and hour not in [i[1] for i in averages if i[0] == day]:
-                    averages.append([])                
-                    averages[-1].append(day)
-                    averages[-1].append(hour)
-                    averages[-1].append(line[3])
-                    averages[-1].append(line[4])
-                    averages[-1].append(line[2])
-                    counter += 1
-                elif averages and line[0].hour == hour and line[0].weekday() == day:
-                    averages[-1][2] += line[3]
-                    averages[-1][3] += line[4]
-                    averages[-1][4] += line[2]
-                    counter += 1
-            if counter:
-              
-                averages[-1].append(counter)
-               
-              
+    for day in range(0,7):
+        for hour in range(0,24):
+            averages.append([day,hour,0,0,0,0])
+            
+    for line in data:
+        indexInAverages = line[0].weekday()*24 + line[0].hour
+        
+        averages[indexInAverages][2] += line[3]
+        averages[indexInAverages][3] += line[4]
+        averages[indexInAverages][4] += line[2]
+        averages[indexInAverages][5] += 1
+        print(averages[indexInAverages][5])
+       
     for valueSet in averages:
-        valueSet[2] = valueSet[2] / valueSet[5]
-        valueSet[3] = valueSet[3] / valueSet[5]
-        valueSet[4] = valueSet[4] / valueSet[5]
-     
+        if valueSet[5]:
+            valueSet[2] = valueSet[2] / valueSet[5]
+            valueSet[3] = valueSet[3] / valueSet[5]
+            valueSet[4] = valueSet[4] / valueSet[5]
+    
+    print(averages)
+    
     if resolution > 1:
+        
+
+            
         averagesNew = []
         for day in range(0,7):
             for hour in range(0,24,resolution):
+                counter = 0
                 temp = [0, 0, 0, 0, 0, 0]
                 for valueSet in averages:
                     if valueSet[0] == day and valueSet[1] >= hour and valueSet[1] < hour + resolution:
@@ -149,10 +130,12 @@ def calculateAveragesWeek(newData,resolution):
                         temp[3] += valueSet[3]
                         temp[4] += valueSet[4]
                         temp[5] += valueSet[5]
+                        if valueSet[5]:
+                            counter += 1
                 if temp[5]:
-                    temp[2] = temp[2]/temp[5]
-                    temp[3] = temp[3]/temp[5]
-                    temp[4] = temp[4]/temp[5]
+                    temp[2] = temp[2]/counter
+                    temp[3] = temp[3]/counter
+                    temp[4] = temp[4]/counter
                     averagesNew.append(temp)
         averages = averagesNew
     return averages
