@@ -46,7 +46,7 @@ def getAverages():
     #typeOfData is used to store whether the user wants postal code, user id or something else.
     typeOfData = 0
     resolution = 2
-    lengthOfTime = -7
+    lengthOfTime = -150
     data = getFromDataBase(time, code, typeOfData, lengthOfTime)
     #.strftime("%Y-%m-%d %H:%M:%S")
     newData = [(item[0], item[1], item[2], item[3], item[4], item[5][:5]) for item in data]
@@ -103,20 +103,15 @@ def calculateAveragesWeek(newData,resolution):
         averages[indexInAverages][3] += line[4]
         averages[indexInAverages][4] += line[2]
         averages[indexInAverages][5] += 1
-        print(averages[indexInAverages][5])
-       
+               
     for valueSet in averages:
         if valueSet[5]:
             valueSet[2] = valueSet[2] / valueSet[5]
             valueSet[3] = valueSet[3] / valueSet[5]
             valueSet[4] = valueSet[4] / valueSet[5]
     
-    print(averages)
-    
     if resolution > 1:
-        
-
-            
+                 
         averagesNew = []
         for day in range(0,7):
             for hour in range(0,24,resolution):
