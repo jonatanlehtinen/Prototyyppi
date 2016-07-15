@@ -1,35 +1,9 @@
-
-
-@author: Lare
-
-import matplotlib.pyplot as plt
-=======
-
 import mysql.connector as mariadb
 from _datetime import date, datetime
 import datetime
+#from drawgraph import drawGraph
 
-'''
 def getFromDataBase(time, code, typeOfData, lengthOfTime):
-     
-
-	if typeOfData == 0:
-		#try:
-		#Create connection to database
-		mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='Otaniemi')
-		cursor = mariadb_connection.cursor()
-		
-		#Query for right data
-		cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemitesti3 WHERE startedAt BETWEEN adddate(%s,%s) AND %s AND postalcode LIKE %s AND radiotype='cell'", (time,lengthOfTime, time,code,))
-		mariadb_connection.close()
-		
-		#return list including fetched data
-		return list(cursor)
-		#except:
-		#    print("Couldn't create database connection")
-		#    return []
-'''   
-	if typeOfData == 1:
 
     if typeOfData == 0:
         try:
@@ -54,8 +28,6 @@ def getFromDataBase(time, code, typeOfData, lengthOfTime):
             cursor = mariadb_connection.cursor()
             
             #Query for right data
-            cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemitesti3 WHERE DATEDIFF(%s,startedAt)<%s AND uid LIKE %s", (time,lengthOfTime,code,))
-
             cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, postalcode FROM otaniemidata WHERE startedAt BETWEEN adddate(%s,%s) AND %s AND uid LIKE %s", (time,lengthOfTime,code,))
 
             mariadb_connection.close()
@@ -72,19 +44,18 @@ def getAverages():
     code = "02150%"
     #typeOfData is used to store whether the user wants postal code, user id or something else.
     typeOfData = 0
+    resolution = 2
     lengthOfTime = -150
     data = getFromDataBase(time, code, typeOfData, lengthOfTime)
     #.strftime("%Y-%m-%d %H:%M:%S")
     newData = [(item[0], item[1], item[2], item[3], item[4], item[5][:5]) for item in data]
-
-    averages = calculateAverages(newData)
+    averages = calculateAveragesWeek(newData,resolution)
     print(averages)
-    return averages
     
 def calculateAverages(newData):  
 	data = [(item[0].hour, item[1], item[2], item[3], item[4], item[5][:5]) for item in newData]
 	data.sort(key=lambda x: (x[0]))
-
+    
 	averages = []
 	for hour in range(0,25):
 		counter = 0
@@ -95,7 +66,7 @@ def calculateAverages(newData):
 				averages[-1].append(line[3])
 				averages[-1].append(line[4])
 				averages[-1].append(line[2])
-
+                
 			elif line[0] == hour and hour not in [i[0] for i in averages]:
 				averages.append([])
 				averages[-1].append(hour)
@@ -115,85 +86,53 @@ def calculateAverages(newData):
 			averages[-1].append(counter)
 	return averages
   
+def calculateAveragesWeek(newData,resolution):  
+    data = [(item[0], item[1], item[2], item[3], item[4], item[5][:5]) for item in newData]
+    data.sort(key=lambda x: (x[0]))
 
-def drawGraph():  
-	data = getAverages()
-	print(data)
-	x1 = [i[0] for i in data]
-	y1 = [i[1] for i in data]
-	y2 = [i[2] for i in data]
-
-	maxY = max(y1+y2)
-	minY = min(y1+y2)
-	minX = min(x1)
-
-	y3 = [i[3] for i in data]
-	
-	fig2 = plt.figure()
-	ax1 = fig2.add_subplot(111)
-	ax1.plot(x1, y3)	
-
-	fig1 = plt.figure()
-	ax = fig1.add_subplot(111)
-	ax.plot(x1,y1, color = "red", marker = "o")
-	ax.plot(x1,y2, color = "blue", marker = "o")
-	ax.grid(True)
-	plt.ylim(max(0,minY - 7000),maxY + 7000)
-	plt.xlim(0, 23)
-	ax.set_title("Otaniemen data 2016")
-	ax.text(int(minX+1), int(maxY+4000), "Red plot: download", fontsize=13)
-	ax.text(int(minX+1), int(maxY), "Blue plot: upload", fontsize=13)
-	plt.xlabel("Time")
-	plt.ylabel("Speed(kbps)")
-	plt.show()
-
-
-'''
-def keskiarvo(values,conn_type):
-    
     averages = []
+    for day in range(0,7):
+        for hour in range(0,24):
+            averages.append([day,hour,0,0,0,0])
+            
+    for line in data:
+        indexInAverages = line[0].weekday()*24 + line[0].hour
+        
+        averages[indexInAverages][2] += line[3]
+        averages[indexInAverages][3] += line[4]
+        averages[indexInAverages][4] += line[2]
+        averages[indexInAverages][5] += 1
+               
+    for valueSet in averages:
+        if valueSet[5]:
+            valueSet[2] = valueSet[2] / valueSet[5]
+            valueSet[3] = valueSet[3] / valueSet[5]
+            valueSet[4] = valueSet[4] / valueSet[5]
     
-    if conn_type:
-        for line in range(len(values)):
-            
-            temp_str = values[line][0]+ ","+  values[line][2]
-            
-            if temp_str not in [i[0] for i in averages]:   
-                
-                averages.append([])
-                averages[-1].append(temp_str)
-                averages[-1].append(float(values[line][1]))
-                averages[-1].append(1)
-                
-            else:       
-                temp = [i[0] for i in averages].index(temp_str)  
-                
-                averages[temp][1] += float(values[line][1])
-                averages[temp][2] += 1
-     
-    else:
-        for line in range(len(values)):
-            
-            temp_str = values[line][0]
-            
-            if temp_str not in [i[0] for i in averages]:   
-                
-                averages.append([])
-                averages[-1].append(temp_str)
-                averages[-1].append(float(values[line][1]))
-                averages[-1].append(1)
-                
-            else:       
-                temp = [i[0] for i in averages].index(temp_str)  
-                
-                averages[temp][1] += float(values[line][1])
-                averages[temp][2] += 1
-      
-    for line in range(len(averages)):
-       
-        averages[line][1] = averages[line][1] / averages[line][2]
-    
-    return averages   
-'''
+    if resolution > 1:
+                 
+        averagesNew = []
+        for day in range(0,7):
+            for hour in range(0,24,resolution):
+                counter = 0
+                temp = [0, 0, 0, 0, 0, 0]
+                for valueSet in averages:
+                    if valueSet[0] == day and valueSet[1] >= hour and valueSet[1] < hour + resolution:
+                        temp[0] = day
+                        temp[1] = hour
+                        temp[2] += valueSet[2]
+                        temp[3] += valueSet[3]
+                        temp[4] += valueSet[4]
+                        temp[5] += valueSet[5]
+                        if valueSet[5]:
+                            counter += 1
+                if temp[5]:
+                    temp[2] = temp[2]/counter
+                    temp[3] = temp[3]/counter
+                    temp[4] = temp[4]/counter
+                    averagesNew.append(temp)
+        averages = averagesNew
+    return averages
+
 if __name__ == '__main__':
-        getAverages()    
+        getAverages()   
