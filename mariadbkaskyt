@@ -1,7 +1,9 @@
 
-#creates table for data, all attributes are strings
+#creates table for postcode csv
 
 CREATE TABLE correctpostcode (postcode varchar(50) NOT NULL,year varchar(50) NOT NULL,operator varchar(50) NOT NULL,operatorID varchar(50),downloadMeasurements varchar(50),averageDownload varchar(50),topDownload varchar(50),uploadMeasurements varchar(50),averageUpload varchar(50),topUpload varchar(50),PRIMARY KEY(postcode, year, operator));
+
+#creates table for all data, datetime and installationID are keys
 
 CREATE TABLE otaniemitesti3 (startedAt datetime NOT NULL,createdAt datetime,vendor varchar(30),model varchar(30),osVersion varchar(15),installationID varchar(50) NOT NULL,imsi varchar(70),uid varchar(50),subscribermcc varchar(50),subscribermnc varchar(50),subscriberoperator varchar(30),networkmcc varchar(10),networkmnc varchar(10),networkoperator varchar(50),latency float,downlink float,uplink float,latitude varchar(30),longitude varchar(30),source varchar(20),accuracy varchar(40),movementSpeed varchar(40),privateIP varchar(20),publicIP varchar(20),measurementServer varchar(20),radiotype varchar(10),radiotech varchar(10),signalStrength varchar(10),areaCode varchar(10),cellID varchar(50),GSMRSSI varchar(30),GSMBER varchar(30),GSMReceivePower varchar(30),WCDMAASU varchar(30),WCDMAReceivePower varchar(30), LTEASU varchar(30),LTERSRP varchar(30),LTECQI varchar(30),LTERSRQ varchar(30),LTERSSNR varchar(30),DLError varchar(70),ULError varchar(70), pingError varchar(70),countryName varchar(40),countryCode varchar(10), province varchar(30),county varchar(30), postalcode varchar(20), PRIMARY KEY(startedAt, installationID));
 

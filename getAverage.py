@@ -3,6 +3,7 @@ from _datetime import date, datetime
 import datetime
 #from drawgraph import drawGraph
 
+
 def getFromDataBase(time, code, typeOfData, lengthOfTime):
 
     if typeOfData == 0:
@@ -135,4 +136,4 @@ def calculateAveragesWeek(newData,resolution):
     return averages
 
 if __name__ == '__main__':
-        getAverages()   
+        getAverages()    

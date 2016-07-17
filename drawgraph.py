@@ -1,26 +1,48 @@
 import matplotlib.pyplot as plt
+import mysql.connector as mariadb
 import pylab
 import numpy as np
 from mpl_toolkits.basemap import Basemap
+import datetime
 
+
+def getFromDataBase(time, code, lengthOfTime):
+
+	#try:
+	#Create connection to database
+	mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='Otaniemi')
+	cursor = mariadb_connection.cursor()
+
+	#Query for right data
+	cursor.execute("SELECT startedAt, uid, latency, downlink, uplink, latitude, longitude FROM otaniemitesti3 WHERE startedAt BETWEEN adddate(%s,%s) AND %s AND postalcode LIKE %s AND radiotype='cell'", (time,lengthOfTime, time,code,))
+	mariadb_connection.close()
+
+	#return list including fetched data
+	return list(cursor)
+#except:
+	print("Couldn't create database connection")
+	#return []
 
 
 
 def createMap():
-	map = Basemap(projection='merc', lon_0=65, lat_0=27,
-	resolution = 'h', area_thresh = 0.1,
-	llcrnrlat=59.85, llcrnrlon=19.49,
-	urcrnrlat=70.35, urcrnrlon=31.48)
-	 
+	data = getFromDataBase(datetime.date(2016,6,13), "02150%", -30)
+	#lat = [float(i[5]) for i in data]
+	#lon = [float(i[6]) for i in data]
+	map = Basemap(projection='merc', lon_0=24.82235, lat_0=60.17984, resolution = 'h', area_thresh = 0.001,llcrnrlat=60.165851, llcrnrlon=24.801312,urcrnrlat=60.193829, urcrnrlon=24.843388)
 	map.drawcountries()
 	map.fillcontinents(color='coral')
 	map.drawmapboundary()
-	lat = 60.45
-	lon = 22.27
-	#for row in data:
-		
-	x,y = map(lon, lat)
-	map.plot(x,y, 'bo', markersize = 4)
+	for row in data:
+		lat = [float(row[5])]
+		lon = [float(row[6])]
+		x,y = map(lon, lat)
+		if row[3] < 10000:
+			map.plot(x,y, 'bo', markersize = 1, color = "red")
+		elif row[3] < 15000:
+			map.plot(x,y, 'bo', markersize = 1, color = "yellow")
+		else:
+			map.plot(x,y, 'bo', markersize = 1, color = "green")
 	#map.drawmeridians(np.arange(0, 360, 30))
 	#map.drawparallels(np.arange(-90, 90, 30))
 	 
@@ -31,7 +53,6 @@ def drawGraph2(data):
 	x = [1/24 * i[1] + 1 + i[0] for i in data]
 	y1 = [i[2] for i in data]
 	y2 = [i[3] for i in data]
-	print(x)
 	
 	fig1 = plt.figure()
 	ax1 = fig1.add_subplot(111)
@@ -42,8 +63,6 @@ def drawGraph2(data):
 	plt.xlabel("Day")
 	plt.ylabel("Speed(kbps)")
 	plt.show()
-	
-
 
 
 def drawGraph(data):
