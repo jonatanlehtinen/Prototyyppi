@@ -73,7 +73,7 @@ def getAverages(time, key, weekly, fir, typeOfData, timeWindow, resolution, sort
     return data
 
 def getAveragesSortOperators(time, key, weekly, fir, typeOfData, timeWindow, resolution, sortOperators):   
-    
+    #This function is used if operator sorting is needed.
     allData = []
     for operator in ["Elisa","Sonera","DNA"]:
         if fir:
