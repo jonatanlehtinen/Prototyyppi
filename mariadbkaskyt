@@ -1,7 +1,8 @@
 
-#creates table for postcode csv
+#creates table for data, all attributes are strings
 
 CREATE TABLE correctpostcode (postcode varchar(10) NOT NULL,year year NOT NULL,operator varchar(50) NOT NULL,operatorID smallint,downloadMeasurements mediumint,averageDownload float,topDownload float,uploadMeasurements mediumint,averageUpload float,topUpload float,PRIMARY KEY(postcode, year, operator));
+
 
 #creates table for all data, datetime and installationID are keys
 

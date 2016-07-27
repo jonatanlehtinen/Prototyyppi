@@ -190,5 +190,3 @@ title('Raining Hogs and Dogs', bbox={'facecolor': '0.8', 'pad': 5})
 
 pylab.savefig('foo.png')
 '''
-
-

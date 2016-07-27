@@ -3,11 +3,6 @@ import operator
 from itertools import groupby
 from operator import itemgetter
 import mysql.connector as mariadb
-from _datetime import date, datetime
-import datetime
-from drawgraph import *
-from scipy.stats import norm
-import math
 
 #Connect to database and return wanted data by postcode
 def getFromDataBase(code):
@@ -18,23 +13,6 @@ def getFromDataBase(code):
 		
 		#Query for right data
 		cursor.execute("SELECT postcode, year, operator, downloadMeasurements, averageDownload, topDownload, uploadMeasurements, averageUpload, topUpload FROM postcodetable1 WHERE postcode=%s", (code,))
-		mariadb_connection.close()
-		
-		#return list including fetched data
-		return list(cursor)
-	except:
-		print("Couldn't create database connection")
-		return []
-
-
-def getFromDataBase2():
-	try:
-		#Create connection to database
-		mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='espoohelsinki')
-		cursor = mariadb_connection.cursor()
-		
-		#Query for right data
-		cursor.execute("SELECT postalcode, networkoperator, COUNT(uplink), AVG(uplink), MAX(uplink) FROM newdata1 GROUP BY postalcode, networkoperator",)
 		mariadb_connection.close()
 		
 		#return list including fetched data
@@ -82,9 +60,13 @@ def calculatePointsFromCode(code):
 	#Variable for keeping score of points given for operators
 	operatorsPoints = dict.fromkeys(operators,0.0)
 
+	#Convert data's strings to int or float with this method
+	#data = convertDatasStringToIntOrFloat(data)
+
 	#Check if some operators don't have enough measurements
 	#and add more from past if they are missing
 	addedData, operatorsPoints = getMoreData(data, operatorsPoints)
+	
 	#Do some point calculations and return the best operator	
 	operatorsPoints = gradeOperators(addedData, operatorsPoints)
 
@@ -117,6 +99,7 @@ def getMoreData(data, operatorsPoints):
 	#Variable to hold operators which are already added to 
 	#either operatorsToAddData or operatorsHavingEnoughData
 	addedOperators = []
+
 	#loop through every line in data
 	for row in data:
 		#add operator to operatorsToAddData or operatorsHavingEnoughData
@@ -163,7 +146,7 @@ def getMoreData(data, operatorsPoints):
 			for row in data:
 
 				#If match is found, add to variable collected
-				if row[1] == str(year) and row[2] == operator[2]:
+				if row[1] == year and row[2] == operator[2]:
 					collected.append(row)
 			
 			#Determine if operator has already being added to 
@@ -200,6 +183,7 @@ def getMoreData(data, operatorsPoints):
 			collected = []
 			count += 1
 		year -= 1
+			
 	return (operatorsHavingEnoughData, updatedPoints)
 
 
@@ -235,39 +219,7 @@ def calculateWeightedAverage(data1, data2):
 	else:
 		return data2 
 	
-def calculateMeasurementAmountFactor(data, operator):
-	maxAmountDown = max([i[3] for i in data])
-	maxAmountUp = max([i[6] for i in data])
-	
-	operatorIndex = [i[2] for i in data].index(operator)
-	differences = []	
-	differences.append( maxAmountDown / data[operatorIndex][3] )
-	differences.append( maxAmountUp / data[operatorIndex][6] )
-	
-	if 1 / differences[0] + 0.4 > 1:
-		factorDown = 1
 
-	elif 1 / differences[0] + 0.4 < 0.7:
-		factorDown = 0.7
-
-	else:
-		factorDown = 1 / differences[0] + 0.4
-	
-	if 1 / differences[1] + 0.4 > 1:
-		factorUp = 1
-
-	elif 1 / differences[1] + 0.4 < 0.7:
-		factorUp = 0.7
-
-	else:
-		factorUp = 1 / differences[1] + 0.4
-	
-	factors = []
-	factors.append( factorDown )
-	factors.append( factorUp )
-	
-	return factors
-	
 def gradeOperators(data, operatorsPoints):
 
 	maxAverageDown = max([i[4] for i in data])
@@ -275,86 +227,32 @@ def gradeOperators(data, operatorsPoints):
 	maxDown = max([i[5] for i in data])
 
 	for operator in data:
-		measurementAmountFactors = calculateMeasurementAmountFactor(data, operator[2])
 		aveDownFactor = operator[4] / maxAverageDown
 		aveUpFactor = operator[7] / maxAverageUp
 		downFactor = operator[5] / maxDown
 		
-		operatorsPoints[operator[2]] += aveDownFactor * measurementAmountFactors[0] * 4
-		operatorsPoints[operator[2]] += aveUpFactor * measurementAmountFactors[1] * 1
+		operatorsPoints[operator[2]] += aveDownFactor *  4
+		operatorsPoints[operator[2]] += aveUpFactor *  1
 		operatorsPoints[operator[2]] += downFactor * 1
 	
 	return operatorsPoints
-
-
-
-'''
-def removeFalseRows():
-	with open("espooandhelsinki.csv", "wt") as newCSV:
-		writer = csv.writer(newCSV)
-		with open("correcthelsinkidata2.csv") as csvFile1:
-			reader1 = csv.reader(csvFile1)
-			for row in reader1:
-				writer.writerow(row)			
-		with open("correctespoo.csv") as csvFile:
-			reader = csv.reader(csvFile)
-			for row in reader:
-				if row[0][:4] == "2016":
-					writer.writerow(row)
-'''					
-
-
-def calculateGap(data):
-	count = 0
-	rowAmount = len(data)
-	for row in data:
-		count += row[0]
 	
-	if rowAmount < 2:
-		return(0.0,0.0)
-	else:	
-		average = count/rowAmount
-		count = 0
-		for row in data:
-			count += (row[0] - average) ** 2	
-		count = count * (1/(rowAmount-1))
-		final = math.sqrt(count)
-		qt = norm.ppf(0.99)	
-
-		value1 = average - qt * (final/math.sqrt(rowAmount))
-		value2 = average + qt * (final/math.sqrt(rowAmount))
-		return(value1, value2)
-
-
-def removeRows():
-	with open('2016-07-20-15-15-25.csv', 'r') as f:
-		reader = csv.reader(f)
-		data_list = list(reader)
-		for item in range(len(data_list)):
-    			for value in range(len(data_list[1])):
-        			try:	
-            				if data_list[item][value] == "":
-                				data_list[item][value] = 0
-        			except:
-            				data_list[item].append(0)    
-            
-	with open("espoodata.csv", "wt") as g:
-		writer = csv.writer(g)
-		writer.writerows(data_list)
-		
 '''
 This method converts data's wanted strings to int or float
 and returns new list containing converted tuples
-
+'''
+'''
 def convertDatasStringToIntOrFloat(data):
 	converted = []
 	for row in data:
 		converted.append((row[0], row[1], row[2], int(row[3]), float(row[4]), float(row[5]), int(row[6]), float(row[7]), float(row[8])))	
-	return converted	
-'''
+	return converted
+'''	
 
+if __name__ == '__main__':
+	print(getTheBestOperator(["02600","00100"]))
+					
 '''
-
 def calculateBestOperator(data):
 	if hasMostMeasurementsAndHighestDownlink(data):
 		return max(data, key=itemgetter(5))[2]
@@ -362,8 +260,6 @@ def calculateBestOperator(data):
 		data = addSpeedForOperatorsForMeasurements(data)
 		data = addSpeedForOperatorsForTopSpeed(data)
 		return max(data, key=itemgetter(5))[2]
-
-
 def calculateBestOperator(data):
 	if isBigDifferencesInMeasurements(data):
 		if hasMostMeasurementsAndHighestDownlink(data):
@@ -378,8 +274,6 @@ def calculateBestOperator(data):
 			return max(data, key=itemgetter(5))[2]
 	else:
 		return max(data, key=itemgetter(5))[2]	
-
-
 def addSpeedForOperatorsForTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5))
 	newData = []
@@ -389,13 +283,10 @@ def addSpeedForOperatorsForTopSpeed(data):
 		else:
 			newData.append(row)
 	return newData
-
-
 def hasHighestDownlinkAndTopSpeed(data):
 	highestDownlink = max(data, key=itemgetter(5)) 
 	highestTopSpeed = max(data, key=itemgetter(6))
 	return highestDownlink[2] == mostMeasurements[2]
-
 def addSpeedForOperatorsForMeasurements(data):
 	highestDownlink = max(data, key=itemgetter(5))
 	newData = []
@@ -405,7 +296,6 @@ def addSpeedForOperatorsForMeasurements(data):
 		else:
 			newData.append(row)
 	return newData
-
 def hasMostMeasurementsAndHighestDownlink(data):
 	highestDownlink = max(data, key=itemgetter(5)) 
 	sortedByMeasurements = sorted(data, key=lambda x: x[4], reverse=True)
@@ -414,9 +304,6 @@ def hasMostMeasurementsAndHighestDownlink(data):
 		return True
 	else:
 		return False
-
-
-
 def addSpeedForOperators(data):
 	highestSpeed = max(data, key=itemgetter(6)) 
 	newData = []
@@ -424,17 +311,14 @@ def addSpeedForOperators(data):
 		if row[6] + 5 < highestSpeed[6]:
 			newData.append((row[0], row[1], row[2], row[3], row[4], row[5] + 3000, row[6]))
 	return data
-
 def isBigDifferenceInTopSpeed(data):
 	highestSpeed = max(data, key=itemgetter(6))
 	lowestSpeed = min(data, key=itemgetter(6))
 	return lowestSpeed[6] + 5 < highestSpeed[6]
-
 def isBigDifferencesInMeasurements(data):
 	mostMeasurements = max(data, key=itemgetter(4))
 	fewestMeasurements = min(data, key=itemgetter(4))
 	return fewestMeasurements[4] * 3 < mostMeasurements[4]
-
 def getBestOperatorFromYearAndCode(year, code, csvFileName):
 	data = getDataFromPostalCodeAndYear(code, year, csvFileName)
 	operators = ["DNA", "Sonera", "Elisa"]
@@ -448,84 +332,42 @@ def getBestOperatorFromYearAndCode(year, code, csvFileName):
 		newBest = max(collected, key=itemgetter(1))
 		if newBest[0] in operators:
 			best = newBest
-
 	return best[0]
-
 	
-
-
 	
-
 def hasEnoughMeasurements(data):
 	if len(data) != 0:
 		return all(int(i[3]) > 50 for i in data)
 	else:
 		return False
-
 			
-
 def getBestOperator(csvFileName):
 	collected = []
 	for code in range(10000, 20000, 10):
 		collected.append(getBestOperatorFromYearAndCode("2015", str(code), csvFileName))
 	print (collected[10])
 	return collected
-'''
-
-def getDataFromPostalCodeAndYear():
-	with open("newresult.csv") as csvFile:
+def getDataFromPostalCodeAndYear(code, year, csvFileName):
+	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
-		pieniero = []
-		keskiero = []
-		keskiero2 = []
-		suuriero = []
+		collected = []
 		for row in reader:	
-			if float(row[10]) - float(row[9]) < 1000:
-				pieniero.append(row)
-			elif float(row[10]) - float(row[9]) < 3000:
-				keskiero.append(row)
-			elif float(row[10]) - float(row[9]) < 5000:
-				keskiero2.append(row)
-			else:
-				suuriero.append(row)
-
-		return [len(pieniero), len(keskiero), len(keskiero2), len(suuriero)]
-				
-
-
-'''
+			if row[0] == code and row[1] == year:
+				collected.append(row)
+	return collected
 	
-
-'''
-def createCSV1():
-	with open("testinumerot.csv") as newCSV:
-		with open("result.csv", "w") as csvFile:
-			reader = csv.reader(newCSV)
-			writer = csv.writer(csvFile)
+def removeFalseRows(csvFileName):
+	with open(csvFileName) as csvFile:
+		reader = csv.reader(csvFile)
+		with open("correctpostcodecsv1.csv", "w") as newCSV:
+			writer = csv.writer(newCSV)
 			for row in reader:
-				data = getFromDataBase2(row[0], row[2])
-				down, up = calculateGap(data)
-				rivi = row + [down, up]
-				writer.writerow(rivi)
-			
-
-'''
-
-'''
-def removeFalseRows():
-	data = getFromDataBase2()
-	with open("testinumerot.csv", "w") as newCSV:
-		writer = csv.writer(newCSV)
-		for row in data:
-			if row[0].rstrip() is not "0" and row[2] is not "-":
-				writer.writerow([row[0].rstrip(), row[1].year, row[2], row[3], row[4], row[5], row[6], row[7], row[8]])
-
-'''
+				if row[2] != "undefined":
+					writer.writerow(row)
 def testRead(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
 	
-
 def getData(data):
 	with open("correctpostcodecsv.csv") as csvFile:
 		reader = csv.reader(csvFile)
@@ -536,7 +378,6 @@ def getData(data):
 	return returnValue
 		
 	
-
 		
 def createOfficialCSV(csvFileName):
 	with open(csvFileName) as csvFile:
@@ -558,14 +399,12 @@ def getBestOperatorFromTwoYearByMeasurements(data, data2, firstBest, secondBest)
 	for row in data2:
 		if row[2] == secondBest:
 			secondMeasurements = int(row[4])
-
 	if firstMeasurements > secondMeasurements:
 		return firstBest
 	elif secondMeasurements > firstMeasurements:
 		return secondBest
 	else:
 		return "Tie between" + firstBest + " and " + secondBest
-
 def createBettercsv(csvFileName):
 	with open(csvFileName) as csvFile:
 		reader = csv.reader(csvFile)
@@ -581,16 +420,8 @@ def createBettercsv(csvFileName):
 					writer.writerow([newCode, row[1], row[2], row[3], row[4], row[5], row[6]])
 				else:
 					writer.writerow(row)
-
 '''
 
 
 
-
-
-
-
-
-
-	
 
