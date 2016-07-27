@@ -4,8 +4,135 @@ import pylab
 import numpy as np
 from mpl_toolkits.basemap import Basemap
 import datetime
+from getAverage import *
+
+def drawGraphWeekCross(data, key, resolution):
+
+	x = [1/24 * i[1] + 1 + i[0] for i in data]
+	y1 = [i[2] for i in data]
+	y2 = [i[3] for i in data]
+
+	averageY1 = sum(y1) / len(y1)
+	averageY2 = sum(y2) / len(y2)
+	
+
+	days = ["MA", "TI", "KE", "TO", "PE", "LA", "SU"]
+
+	maxBoth = max(max(y1), max(y2))
+	
+	fig1 = plt.figure()
+	ax1 = fig1.add_subplot(111)
+	ax1.plot([1,8],[averageY1, averageY1], color = "red", linestyle = "dotted")
+	ax1.plot([1,8],[averageY2, averageY2], color = "blue", linestyle = "dotted")
+	ax1.plot(x, y1, color="red", marker = "x", markeredgecolor = "red")
+	ax1.plot(x, y2, color = "blue", marker = "o", markerfacecolor = "blue")
+	
+	
+	ax1.text(1, maxBoth+4000, "Punainen käyrä: Latausnopeus", fontsize=13)
+	ax1.text(1, maxBoth+800, "Sininen käyrä: Lähetysnopeus", fontsize=13)
+		
+	ax1.set_title(key + ", viikottaisen keskiarvot " + str(resolution) + " tunnin ajalta")
+	plt.xlabel("Päivä")
+	plt.ylabel("Nopeus(kbps)")
+	plt.ylim(0, maxBoth + 7000)
+	plt.xticks(range(1,8), days, rotation='vertical')
+	plt.xlim(1,8)
+	plt.show()
 
 
+
+def drawGraphWeek(data, key, resolution):
+	x = [1/24 * i[1] + 1 + i[0] for i in data]
+	y1 = [i[2] for i in data]
+	y2 = [i[3] for i in data]
+
+	days = ["MA", "TI", "KE", "TO", "PE", "LA", "SU"]
+
+	maxBoth = max(max(y1), max(y2))
+	
+	fig1 = plt.figure()
+	ax1 = fig1.add_subplot(111)
+	ax1.plot(x, y1, color="red", marker = "o")
+	ax1.plot(x, y2, color = "blue", marker = "o")
+	
+	ax1.text(1, maxBoth+4000, "Punainen käyrä: Latausnopeus", fontsize=13)
+	ax1.text(1, maxBoth+800, "Sininen käyrä: Lähetysnopeus", fontsize=13)
+		
+	ax1.set_title(key + ", viikottaisen keskiarvot " + str(resolution) + " tunnin ajalta")
+	plt.xlabel("Päivä")
+	plt.ylabel("Nopeus(kbps)")
+	plt.ylim(0, maxBoth + 7000)
+	plt.xticks(range(1,8), days, rotation='vertical')
+	plt.xlim(1,8)
+	plt.show()
+
+def drawGraphForOperators(data, postalcode):
+	
+	elisaX = [i[0] for i in data[0]]
+	soneraX = [i[0] for i in data[1]]
+	dnaX = [i[0] for i in data[2]]
+	elisaY = [i[1] for i in data[0]]
+	soneraY = [i[1] for i in data[1]]
+	dnaY = [i[1] for i in data[2]]
+
+	maxElisaY = max(elisaY)
+	maxDNAY = max(dnaY)
+	maxSoneraY = max(soneraY)
+	maxAll =max([maxElisaY, maxDNAY, maxSoneraY])
+
+	fig2 = plt.figure()
+	ax = fig2.add_subplot(111)
+	ax.plot(elisaX, elisaY, color = "red")
+	ax.plot(soneraX, soneraY, color = "green")
+	ax.plot(dnaX, dnaY, color = "blue")
+	ax.grid(True)
+	ax.text(1, maxAll + 6700, "Punainen käyrä: Elisa", fontsize=11)
+	ax.text(1, maxAll + 3700, "Sininen käyrä: DNA", fontsize=11)
+	ax.text(1, maxAll + 700, "Vihreä käyrä: Sonera", fontsize=11)
+	plt.ylim(0, maxAll + 10000)
+	plt.xlim(0, 24)
+	plt.xlabel("Tunti")
+	plt.ylabel("Nopeus(kbps)")
+	ax.set_title("Data postinumerosta: " + postalcode + ", operaattoreittain")
+	plt.show()
+	
+
+def drawGraphDay(data, name):
+
+	x1 = [i[0] for i in data]
+	y1 = [i[1] for i in data]
+	y2 = [i[2] for i in data]
+
+	maxY = max(y1+y2)
+	minY = min(y1+y2)
+	minX = min(x1)
+
+	y3 = [i[3] for i in data]
+	
+	fig2 = plt.figure()
+	ax1 = fig2.add_subplot(111)
+	ax1.plot(x1, y3)	
+	ax1.grid(True)	
+	ax1.set_title("Latenssit: " + name)
+	plt.ylabel("Ping(ms)")
+	plt.xlabel("Hour")
+
+	fig1 = plt.figure()
+	ax = fig1.add_subplot(111)
+	ax.plot(x1,y1, color = "red", marker = "o")
+	ax.plot(x1,y2, color = "blue", marker = "o")
+	ax.grid(True)
+	plt.ylim(max(0,minY - 7000),maxY + 7000)
+	plt.xlim(0, 23)
+	ax.set_title("Latausnopeus: " + name + " päivän keskiarvot tunnettain")
+	ax.text(int(minX+1), int(maxY+4000), "Red plot: download", fontsize=13)
+	ax.text(int(minX+1), int(maxY+600), "Blue plot: upload", fontsize=13)
+	plt.xlabel("Hour")
+	plt.ylabel("Speed(kbps)")
+	plt.show()
+
+
+'''
 def getFromDataBase(time, code, lengthOfTime):
 
 	#try:
@@ -22,8 +149,6 @@ def getFromDataBase(time, code, lengthOfTime):
 #except:
 	print("Couldn't create database connection")
 	#return []
-
-
 
 def createMap():
 	data = getFromDataBase(datetime.date(2016,6,13), "02150%", -30)
@@ -48,54 +173,7 @@ def createMap():
 	 
 	plt.show()
 
-
-def drawGraph2(data):
-	x = [1/24 * i[1] + 1 + i[0] for i in data]
-	y1 = [i[2] for i in data]
-	y2 = [i[3] for i in data]
-	
-	fig1 = plt.figure()
-	ax1 = fig1.add_subplot(111)
-	ax1.plot(x, y1, color="red", marker = "o")
-	ax1.plot(x, y2, color = "blue")
-	
-	ax1.set_title("Otaniemen data 2016, viikottaiset keskiarvot tunnettain")
-	plt.xlabel("Day")
-	plt.ylabel("Speed(kbps)")
-	plt.show()
-
-
-def drawGraph(data):
-
-	print(data)
-	x1 = [i[0] for i in data]
-	y1 = [i[1] for i in data]
-	y2 = [i[2] for i in data]
-
-	maxY = max(y1+y2)
-	minY = min(y1+y2)
-	minX = min(x1)
-
-	y3 = [i[3] for i in data]
-	
-	fig2 = plt.figure()
-	ax1 = fig2.add_subplot(111)
-	ax1.plot(x1, y3)	
-	
-	fig1 = plt.figure()
-	ax = fig1.add_subplot(111)
-	ax.plot(x1,y1, color = "red", marker = "o")
-	ax.plot(x1,y2, color = "blue", marker = "o")
-	ax.grid(True)
-	plt.ylim(max(0,minY - 7000),maxY + 7000)
-	plt.xlim(0, 23)
-	ax.set_title("Otaniemen data 2016")
-	ax.text(int(minX+1), int(maxY+4000), "Red plot: download", fontsize=13)
-	ax.text(int(minX+1), int(maxY), "Blue plot: upload", fontsize=13)
-	plt.xlabel("Hour")
-	plt.ylabel("Speed(kbps)")
-	plt.show()
-
+'''
 '''from pylab import figure, axes, pie, title, show
 import pylab
 

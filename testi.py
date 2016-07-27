@@ -6,11 +6,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 
-# Lambert Conformal Conic map.
+
 def createMap():
-	m = Basemap(llcrnrlon=-100.,llcrnrlat=0.,urcrnrlon=-20.,urcrnrlat=57.,projection='lcc',lat_1=20.,lat_2=40.,lon_0=-60.,resolution
-='l',area_thresh=1000.)
-	m.show()
+	map = Basemap(projection='merc', lon_0=65, lat_0=27,
+	resolution = 'h', area_thresh = 0.1,
+	llcrnrlat=59.85, llcrnrlon=19.49,
+	urcrnrlat=70.35, urcrnrlon=31.48)
+	 
+	map.drawcountries()
+	map.fillcontinents(color='coral')
+	map.drawmapboundary()
+	lat = 60.45
+	lon = 22.27
+	x,y = map(lon, lat)
+	map.plot(x,y, 'bo', markersize = 4)
+	#map.drawmeridians(np.arange(0, 360, 30))
+	#map.drawparallels(np.arange(-90, 90, 30))
+	 
+	plt.show()
 
 def getAverageDownlink(csvFileName):
 	with open(csvFileName) as testfile:
