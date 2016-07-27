@@ -219,39 +219,7 @@ def calculateWeightedAverage(data1, data2):
 	else:
 		return data2 
 	
-def calculateMeasurementAmountFactor(data, operator):
-	maxAmountDown = max([i[3] for i in data])
-	maxAmountUp = max([i[6] for i in data])
-	
-	operatorIndex = [i[2] for i in data].index(operator)
-	differences = []	
-	differences.append( maxAmountDown / data[operatorIndex][3] )
-	differences.append( maxAmountUp / data[operatorIndex][6] )
-	
-	if 1 / differences[0] + 0.4 > 1:
-		factorDown = 1
 
-	elif 1 / differences[0] + 0.4 < 0.7:
-		factorDown = 0.7
-
-	else:
-		factorDown = 1 / differences[0] + 0.4
-	
-	if 1 / differences[1] + 0.4 > 1:
-		factorUp = 1
-
-	elif 1 / differences[1] + 0.4 < 0.7:
-		factorUp = 0.7
-
-	else:
-		factorUp = 1 / differences[1] + 0.4
-	
-	factors = []
-	factors.append( factorDown )
-	factors.append( factorUp )
-	
-	return factors
-	
 def gradeOperators(data, operatorsPoints):
 
 	maxAverageDown = max([i[4] for i in data])
@@ -259,17 +227,16 @@ def gradeOperators(data, operatorsPoints):
 	maxDown = max([i[5] for i in data])
 
 	for operator in data:
-		measurementAmountFactors = calculateMeasurementAmountFactor(data, operator[2])
 		aveDownFactor = operator[4] / maxAverageDown
 		aveUpFactor = operator[7] / maxAverageUp
 		downFactor = operator[5] / maxDown
 		
-		operatorsPoints[operator[2]] += aveDownFactor * measurementAmountFactors[0] * 4
-		operatorsPoints[operator[2]] += aveUpFactor * measurementAmountFactors[1] * 1
+		operatorsPoints[operator[2]] += aveDownFactor *  4
+		operatorsPoints[operator[2]] += aveUpFactor *  1
 		operatorsPoints[operator[2]] += downFactor * 1
 	
 	return operatorsPoints
-		
+	
 '''
 This method converts data's wanted strings to int or float
 and returns new list containing converted tuples
@@ -280,7 +247,9 @@ def convertDatasStringToIntOrFloat(data):
 		converted.append((row[0], row[1], row[2], int(row[3]), float(row[4]), float(row[5]), int(row[6]), float(row[7]), float(row[8])))	
 	return converted	
 
-
+if __name__ == '__main__':
+	print(getTheBestOperator(["02600","00100"]))
+					
 '''
 
 def calculateBestOperator(data):
