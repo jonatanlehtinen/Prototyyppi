@@ -13,3 +13,9 @@ CREATE TABLE newdata1 (startedAt datetime NOT NULL,createdAt datetime,vendor var
 
 LOAD DATA LOCAL INFILE '/home/joppe/Documents/Python/result.csv' INTO TABLE correctpostcode FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
 
+
+######################
+#creates table for all data, datetime and installationID are keys
+
+CREATE TABLE newdata1 (startedAt datetime NOT NULL,vendor varchar(40),model varchar(100),installationID varchar(50) NOT NULL,uid varchar(50),networkoperator varchar(50),latency float,downlink float,uplink float,latitude float,longitude float,county varchar(30), postalcode varchar(10), PRIMARY KEY(startedAt, installationID));
+######################
