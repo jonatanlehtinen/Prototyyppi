@@ -1,13 +1,20 @@
 import matplotlib.pyplot as plt
-import mysql.connector as mariadb
 import pylab
 import numpy as np
-from mpl_toolkits.basemap import Basemap
-import datetime
-from getAverage import *
+
+
+def drawGraphLongTime(data,location):
+	fig1 = plt.figure()
+	ax1 = fig1.add_subplot(111)
+	ax1.set_title(location)
+
+	ax1.plot([i[0] for i in data[0]], [i[1] for i in data[0]], color = "red")
+
+	fig1.autofmt_xdate()
+	
+	plt.show()
 
 def drawGraphWeekCross(data, key, resolution):
-
 	x = [1/24 * i[1] + 1 + i[0] for i in data]
 	y1 = [i[2] for i in data]
 	y2 = [i[3] for i in data]
