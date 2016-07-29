@@ -12,7 +12,28 @@ def getFromDataBase(code):
 		cursor = mariadb_connection.cursor()
 		
 		#Query for right data
-		cursor.execute("SELECT postcode, year, operator, downloadMeasurements, averageDownload, topDownload, uploadMeasurements, averageUpload, topUpload FROM postcodetable1 WHERE postcode=%s", (code,))
+		cursor.execute("SELECT postcode, year, operator, downloadMeasurements, averageDownload, topDownload, uploadMeasurements, averageUpload, topUpload, confidenceIntervalMin, confidenceIntervalMax FROM postcode WHERE postcode=%s", (code,))
+		mariadb_connection.close()
+		
+		#return list including fetched data
+		return list(cursor)
+	except:
+		print("Couldn't create database connection")
+		return []
+
+
+'''
+Method for fetching data from database when calculating
+limits for confidence intervals
+'''
+def getFromDataBaseForIntervalCalculation():
+	try:
+		#Create connection to database
+		mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
+		cursor = mariadb_connection.cursor()
+		
+		#Query for right data
+		cursor.execute("SELECT postcode, year, operator, downloadMeasurements, averageDownload, topDownload, uploadMeasurements, averageUpload, topUpload, confidenceIntervalMin, confidenceIntervalMax FROM postcode",)
 		mariadb_connection.close()
 		
 		#return list including fetched data
@@ -23,31 +44,59 @@ def getFromDataBase(code):
 
 '''
 Main method for calculating the best operator 
-from given parameter postcode
+from given parameter list of postcodes, returns
+list of lists. Every lists first element is operators name,
+second element is postcode, third is points from this
+postcode and then comes the amount of confidence points.
+This postcode-points-confidencepoints-combo repeats itself
+as many times as there are postcodes(presuming operator has
+data from every postcode) and the last element is the average
+points.
 '''
-	
 def getTheBestOperator(codes):
+	#variable where points are added and 
 	points = []
+	#loop through postcodes
 	for code in codes:
+		#Calculate points for every operator from that postcode
 		pointsFromCode = calculatePointsFromCode(code)
+		#loop through operators which points where calculated
 		for operator in pointsFromCode:
+			#if operators hasn't already being added to variable points
+			#it will be added now 
 			if operator not in [i[0] for i in points]:
-				points.append([operator, code, pointsFromCode[operator]])
+				#for the first time, add this operator, postcode,
+				# scoring points and confidence points to variable points 
+				points.append([operator, code, pointsFromCode[operator][0], pointsFromCode[operator][1]])
 			else:
+				#operator has alreada being added to variable points
+				#so find out where it is and append next postcode to its list
 				temp = [i[0] for i in points].index(operator)
 				points[temp].append(code)
-				points[temp].append(pointsFromCode[operator])
+				points[temp].append(pointsFromCode[operator][0])
+				points[temp].append(pointsFromCode[operator][1])
+	#loop through points and add average amount of points
+	#for operators to the end of every list
 	for operator in points:
 		length = len(operator)
 		i = 2
-		points2 = []
+		collectedPoints = []
 		while i < length:
-			points2.append(operator[i])
-			i += 2
-		operator.append(sum(points2) / len(points2))
+			collectedPoints.append(operator[i])
+			i += 3
+		operator.append(sum(collectedPoints) / len(collectedPoints))
 	
 	return points
 
+
+'''
+This method calculates points for operators and returns
+dictionary with every operator as its keys and lists of points
+as its items. Lists contain two elements, the first element is
+the amount of points operator has scored from the given postcode
+and the second element is the amount of confidence points
+operator gets from the given postcode
+'''
 def calculatePointsFromCode(code):
 	#Get data from database
 	data = getFromDataBase(code)
@@ -60,9 +109,6 @@ def calculatePointsFromCode(code):
 	#Variable for keeping score of points given for operators
 	operatorsPoints = dict.fromkeys(operators,0.0)
 
-	#Convert data's strings to int or float with this method
-	#data = convertDatasStringToIntOrFloat(data)
-
 	#Check if some operators don't have enough measurements
 	#and add more from past if they are missing
 	addedData, operatorsPoints = getMoreData(data, operatorsPoints)
@@ -70,7 +116,12 @@ def calculatePointsFromCode(code):
 	#Do some point calculations and return the best operator	
 	operatorsPoints = gradeOperators(addedData, operatorsPoints)
 
+	#Add confidence points for every operator 
+	operatorsPoints = addConfidencePoints(addedData, operatorsPoints)
+
 	return operatorsPoints
+
+
 
 
 '''
@@ -220,23 +271,186 @@ def calculateWeightedAverage(data1, data2):
 		return data2 
 	
 
+'''
+Method for grading the operators. Operators grade is
+calculated by adding to the amount of points they were
+given regarding to the age and amount of data they had
+points from three categories: average download speed,
+average upload speed and maximum download speed. Points
+from these categories are determined by relation between
+the best operator and the rest. For example from average
+download speed the points are calculated followingly:
+4 * max(averageDownload) / operatorsDownload. So the 
+best operator by average download speed will be given
+maximum 4 points and the other operators points depend
+on their average download speed relation between the best.
+'''
 def gradeOperators(data, operatorsPoints):
 
+	#Calculate max values
 	maxAverageDown = max([i[4] for i in data])
 	maxAverageUp = max([i[7] for i in data])
 	maxDown = max([i[5] for i in data])
 
+	#Calculate points for every operator
 	for operator in data:
+		#Calculate factors
 		aveDownFactor = operator[4] / maxAverageDown
 		aveUpFactor = operator[7] / maxAverageUp
 		downFactor = operator[5] / maxDown
 		
+		#add points for operators
 		operatorsPoints[operator[2]] += aveDownFactor *  4
 		operatorsPoints[operator[2]] += aveUpFactor *  1
 		operatorsPoints[operator[2]] += downFactor * 1
 	
 	return operatorsPoints
 	
+'''
+add points for operators from the amount of confidence
+of their data. This method calculates confidence points for 
+operators and adds it to the variable operatorsPoints which
+is returned. 
+'''
+def addConfidencePoints(data, operatorsPoints):
+
+	#get the limits for points
+	limits = calculateLimits()
+	#loop through parameter data, which contains
+	#operators data from one postcode
+	for datarow in data:
+		#interval = confidence max - confidence min
+		interval = datarow[10] - datarow[9]
+		points = 5
+		notAdded = True
+		#loop through the limits for the points
+		for limit in limits:
+			#if operators interval is smaller than the limit
+			#and operators points hasn't already being added
+			#they shall be added now 
+			if interval < limit and notAdded:
+				#for current operator add confidence points
+				operatorsPoints[datarow[2]] = [operatorsPoints[datarow[2]], points]
+				notAdded = False			
+			points -= 1
+		#if operator was not added or in other words its confidence
+		#interval doesn't suffice for even 1 point, zero will be added
+		if notAdded:
+			operatorsPoints[datarow[2]] = [operatorsPoints[datarow[2]], 0]
+
+	return operatorsPoints
+
+
+'''
+add points for operators from the amount of confidence
+of their data. This method calculates confidence points for 
+operators and adds it to the variable operatorsPoints which
+is returned. 
+'''
+def addConfidencePoints(data, operatorsPoints):
+
+	#get the limits for points
+	limits = calculateLimits()
+	#loop through parameter data, which contains
+	#operators data from one postcode
+	for datarow in data:
+		#interval = confidence max - confidence min
+		interval = datarow[10] - datarow[9]
+		points = 5
+		notAdded = True
+		#loop through the limits for the points
+		for limit in limits:
+			#if operators interval is smaller than the limit
+			#and operators points hasn't already being added
+			#they shall be added now 
+			if interval < limit and notAdded and interval != 0.0:
+				#for current operator add confidence points
+				operatorsPoints[datarow[2]] = [operatorsPoints[datarow[2]], points]
+				notAdded = False			
+			points -= 1
+		#if operator was not added or in other words its confidence
+		#interval doesn't suffice for even 1 point, zero will be added
+		if notAdded:
+			operatorsPoints[datarow[2]] = [operatorsPoints[datarow[2]], 0]
+
+	return operatorsPoints
+
+
+
+'''
+Calculates limits for confidence scores. Returns list 
+of floats where the first element is the minimum amount
+of confidence level which is required to get 5 out of 5
+points, the second element is the minimum amount for 4
+points and so on. Confidence levels are determined by 
+bell curve: every confidence interval is being calculated
+from data and then sorted from the smallest to the highest.
+The smaller the interval the better the points. Top 15% is 
+being given 5 points, 20% will be given 4 and so on.  
+
+'''
+def calculateLimits():
+	#get all data from database
+	data = getFromDataBaseForIntervalCalculation()
+	#calculate the intervals for data by subtracting the 
+	#confidence intervals max amount from the min amount
+	intervals = [i[10] - i[9] for i in data if i[3] > 1 and i[9] != 0.0 and i[10] != 0.0]
+	#sort from smallest to highest
+	srtd = sorted(intervals)
+	lengthOfList = len(srtd)
+	#set percentages for each point
+	fivePointPercentage = 0.15
+	fourPointPercentage = 0.20
+	threePointPercentage = 0.20
+	twoPointPercentage = 0.25
+	onePointPercentage = 0.15
+	zeroPointPercentage = 0.5
+	#calculate the amount operators which will be given wanted points
+	amountOfFivePoint = round(lengthOfList * fivePointPercentage)
+	amountOfFourPoint = round(lengthOfList * fourPointPercentage)
+	amountOfThreePoint = round(lengthOfList * threePointPercentage)
+	amountOfTwoPoint = round(lengthOfList * twoPointPercentage)
+	amountOfOnePoint = round(lengthOfList * onePointPercentage)
+	amountOfZeroPoint = lengthOfList - amountOfFivePoint - amountOfFourPoint - amountOfThreePoint - amountOfTwoPoint - amountOfOnePoint
+	#get the limits from data
+	fivePointMax = srtd[amountOfFivePoint]
+	fourPointMax = srtd[amountOfFourPoint + amountOfFivePoint]
+	threePointMax = srtd[amountOfThreePoint + amountOfFourPoint + amountOfFivePoint]
+	twoPointMax = srtd[amountOfTwoPoint + amountOfThreePoint + amountOfFourPoint + amountOfFivePoint]
+	onePointMax = srtd[amountOfOnePoint + amountOfTwoPoint + amountOfThreePoint + amountOfFourPoint + amountOfFivePoint]
+
+	return[round(fivePointMax), round(fourPointMax), round(threePointMax), round(twoPointMax), round(onePointMax)]
+
+'''
+this method was used when calculating the confidence intervals
+for data. Parameter data is containing data from one operator
+from one postcode from 2016.
+'''
+def calculateIntervals(data):
+	count = 0
+	rowAmount = len(data)
+	#loop through
+	for row in data:
+		count += row[0]
+	#if there's not enough rows return 0.0,0.0
+	if rowAmount < 2:
+		return(0.0,0.0)
+	else:	
+		#calculate operators average download speed
+		average = count/rowAmount
+		count = 0
+		#calculate standard deviation
+		for row in data:
+			count += (row[0] - average) ** 2	
+		count = count * (1/(rowAmount-1))
+		standardDeviation = math.sqrt(count)
+		#define the precision of confidence interval, here 99%
+		qt = norm.ppf(0.99)	
+		#calculate minimum and maximum limits and return them
+		value1 = average - qt * (standardDeviation/math.sqrt(rowAmount))
+		value2 = average + qt * (standardDeviation/math.sqrt(rowAmount))
+		return(value1, value2)
+
 '''
 This method converts data's wanted strings to int or float
 and returns new list containing converted tuples
@@ -377,19 +591,34 @@ def getData(data):
 				returnValue = [row[4], row[5], row[6]] 
 	return returnValue
 		
-	
+
 		
-def createOfficialCSV(csvFileName):
-	with open(csvFileName) as csvFile:
-		reader = csv.reader(csvFile)
-		next(reader)
-		with open("mycsv1.csv", "w") as mycsv:
-			writer = csv.writer(mycsv)
-			for row in reader:
-				dataToAdd = getData(row)
-				writer.writerow(row + dataToAdd)
+def createOfficialCSV():
+	with open("result.csv") as csvFile:
+		with open("mycsv1.csv") as secondCSV:		
+			with open("newestresult.csv", "w") as newCSV:
+				reader1 = csv.reader(csvFile)
+				reader2 = csv.reader(secondCSV)
+				next(reader2)
+				listana = list(reader2)
+				writer = csv.writer(newCSV)
+				for row in reader1:
+					writer.writerow(row)
+					if int(row[3]) <= 50:
+						notEnoughData = True
+						year = 2015
+						amount = int(row[3])
+						while notEnoughData and year > 2012:
+							for row1 in listana:
+								if(row1[0] == row[0] and row1[1] == str(year) and row[2] == row1[2]):
+									amount += int(row1[4])
+								if(amount > 50 and notEnoughData):
+									writer.writerow(row1[:3] + row1[4:] + [0.0, 0.0])
+									notEnoughData = False
+							year -= 1
 				
-				
+		
+	
 def getBestOperatorFromTwoYearByMeasurements(data, data2, firstBest, secondBest):
 	firstMeasurements = 0
 	secondMeasurements = 0	
