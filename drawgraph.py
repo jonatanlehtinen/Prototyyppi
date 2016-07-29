@@ -4,7 +4,6 @@ import pylab
 import numpy as np
 from mpl_toolkits.basemap import Basemap
 import datetime
-from getAverage import *
 
 def drawGraphWeekCross(data, key, resolution):
 
@@ -31,7 +30,7 @@ def drawGraphWeekCross(data, key, resolution):
 	ax1.text(1, maxBoth+4000, "Punainen käyrä: Latausnopeus", fontsize=13)
 	ax1.text(1, maxBoth+800, "Sininen käyrä: Lähetysnopeus", fontsize=13)
 		
-	ax1.set_title(key + ", viikottaisen keskiarvot " + str(resolution) + " tunnin ajalta")
+	ax1.set_title(key + ", viikottaiset keskiarvot " + str(resolution) + " tunnin ajalta")
 	plt.xlabel("Päivä")
 	plt.ylabel("Nopeus(kbps)")
 	plt.ylim(0, maxBoth + 7000)

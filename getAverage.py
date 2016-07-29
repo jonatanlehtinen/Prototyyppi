@@ -1,7 +1,7 @@
 import mysql.connector as mariadb
 from _datetime import date, datetime, timedelta
 import datetime
-from drawgraph import drawGraph
+#from drawgraph import drawGraphDay
 
 def getFromDataBase(time, key, location, typeOfLocation, lengthOfTime, operator):
       
