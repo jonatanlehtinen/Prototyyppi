@@ -3,25 +3,24 @@ import datetime
 from drawgraph import *
 
 def createWantedGraph(key,location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators):
-	time = datetime.date(2016,6,1)
+	time = datetime.date(2016,6,13)
 	dataForGraphs = calc.getAverages(time, key, location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators)
 	if longTime:
-		drawGraphLongTime(dataForGraphs,location)
-	elif sortOperators:
-		drawGraphForOperators(dataForGraphs, location)
+		drawGraphLongTime(dataForGraphs,location,sortOperators)
 	elif weekly:
-		drawGraphWeekCross(dataForGraphs, location, resolution)
+		drawGraphWeek(dataForGraphs, location, resolution, sortOperators)
 	else:
-		drawGraphDay(dataForGraphs, location)
+		drawGraphDay(dataForGraphs, location, resolution, sortOperators)
 
 if __name__ == '__main__':
 	key = 0
-	location = "Helsinki"
-	typeOfLocation = 0
-	longTime = 1
+	location = "Espoo"
+	typeOfLocation = 2
+	longTime = 0
+	
 	weekly = 0
 	fir = 0
-	timeWindow = -10
+	timeWindow = -30
 	resolution = 1
-	sortOperators = 1
+	sortOperators = "Sonera"
 	createWantedGraph(key, location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators)
