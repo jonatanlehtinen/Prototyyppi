@@ -3,6 +3,7 @@ from _datetime import date, datetime, timedelta
 import datetime
 import numpy
 
+
 def getFromDataBase(time, key, location, typeOfLocation, lengthOfTime, operator):
       
     try:
