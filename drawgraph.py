@@ -9,10 +9,19 @@ def drawGraphLongTime(data,location,sortOperators):
 		ax = fig1.add_subplot(211)
 		maxAll = max([i[1] for i in data[0]]+[i[1] for i in data[1]]+[i[1] for i in data[2]])
 		minAll = min([i[1] for i in data[0]]+[i[1] for i in data[1]]+[i[1] for i in data[2]])
-		if minAll - 1000 < 0:
+		
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
 
 		ax.plot([i[0] for i in data[0]], [i[1] for i in data[0]], color = 'red')
 		ax.plot([i[0] for i in data[1]], [i[1] for i in data[1]], color = 'green')
@@ -20,11 +29,11 @@ def drawGraphLongTime(data,location,sortOperators):
 		ax.grid(True)
 		
 		temp = [i[0] for i in data[0]]
-		ax.text(temp[3],maxAll + 5700, "Elisa", fontsize=14,color = 'red')
-		ax.text(temp[3], maxAll + 3400, "DNA", fontsize=14, color = 'blue')
-		ax.text(temp[3], maxAll + 1100, "Sonera", fontsize=14, color = 'green')
+		ax.text(temp[3],maxAll- gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(temp[20], maxAll - gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(temp[37], maxAll - gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		ax.set_title(location + ": " + "eri operaattorien keskiarvot" )
 		plt.ylabel("Latausnopeus(kbps)")	
 		
@@ -33,61 +42,87 @@ def drawGraphLongTime(data,location,sortOperators):
 		
 		maxAll = max([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
 		minAll = min([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
-		if minAll - 1000 < 0:
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
-
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+		
 		ax.plot([i[0] for i in data[0]], [i[2] for i in data[0]], color = 'red')
 		ax.plot([i[0] for i in data[1]], [i[2] for i in data[1]], color = 'green')
 		ax.plot([i[0] for i in data[2]], [i[2] for i in data[2]], color = 'blue')
 		ax.grid(True)
 		
 		temp = [i[0] for i in data[0]]
-		ax.text(temp[3],maxAll + 6700, "Elisa", fontsize=14,color = 'red')
-		ax.text(temp[3], maxAll + 4500, "DNA", fontsize=14, color = 'blue')
-		ax.text(temp[3], maxAll + 2300, "Sonera", fontsize=14, color = 'green')
+		ax.text(temp[3],maxAll -gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(temp[20], maxAll - gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(temp[37], maxAll - gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		plt.ylabel("Lahetysnopeus(kbps)")	
 
 	elif sortOperators in ["Elisa","Sonera","DNA"]:
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[1] for i in data]+[i[2] for i in data])
-		minBoth = min([i[1] for i in data]+[i[2] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
-		else:
-			minBoth = minBoth- 3000
+		maxAll = max([i[1] for i in data]+[i[2] for i in data])
+		minAll = min([i[1] for i in data]+[i[2] for i in data])
 		
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
+		else:
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+			
 		ax.plot([i[0] for i in data], [i[1] for i in data], color = "red")
 		ax.plot([i[0] for i in data], [i[2] for i in data], color = "blue")
 		ax.grid(True)
 
 		temp = [i[0] for i in data]
-		ax.text(temp[3], maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(temp[3], maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
-		plt.ylim(minBoth, maxBoth + 9000)
+		ax.text(temp[3], maxAll - gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(temp[3], minAll + res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.ylim(minAll, maxAll)
 		
 		ax.set_title(sortOperators + ": " + location )
 
 	else:
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[1] for i in data]+[i[2] for i in data])
-		minBoth = min([i[1] for i in data]+[i[2] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
+		maxAll = max([i[1] for i in data]+[i[2] for i in data])
+		minAll = min([i[1] for i in data]+[i[2] for i in data])
+		
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
 		else:
-			minBoth = minBoth- 3000
-			
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+				
 		ax.plot([i[0] for i in data], [i[1] for i in data], color = "red")
 		ax.plot([i[0] for i in data], [i[2] for i in data], color = "blue")
 		ax.grid(True)
 		
 		temp = [i[0] for i in data]
-		ax.text(temp[3], maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(temp[3], maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
-		plt.ylim(minBoth, maxBoth + 9000)
+		ax.text(temp[3], maxAll - gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(temp[3], minAll + res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.ylim(minAll, maxAll)
 		
 		ax.set_title("Keskiarvot alueelta " + location )
 
@@ -104,25 +139,33 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 		ax = fig1.add_subplot(211)
 		maxAll = max([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
 		minAll = min([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
-		if minAll - 1000 < 0:
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
-
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+			
 		ax.plot(x, [i[2] for i in data[0]], color = 'red')
 		ax.plot(x, [i[2] for i in data[1]], color = 'green')
 		ax.plot(x, [i[2] for i in data[2]], color = 'blue')
 		ax.grid(True)
 		
-		ax.text(1,maxAll + 5700, "Elisa", fontsize=14,color = 'red')
-		ax.text(1, maxAll + 3400, "DNA", fontsize=14, color = 'blue')
-		ax.text(1, maxAll + 1100, "Sonera", fontsize=14, color = 'green')
+		ax.text(1,maxAll -gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(2, maxAll -gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(3, maxAll -gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		ax.set_title(location + ": " + "eri operaattorien keskiarvot viikon aikana" )
 		plt.ylabel("Latausnopeus(kbps)")	
 		
-		plt.xticks(range(1,8), days, rotation='vertical')
+		plt.xticks(range(1,8), days, rotation=45)
 		plt.xlim(1,8)
 		
 		#Second subplot: download averages
@@ -130,21 +173,29 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 		
 		maxAll = max([i[3] for i in data[0]]+[i[3] for i in data[1]]+[i[3] for i in data[2]])
 		minAll = min([i[3] for i in data[0]]+[i[3] for i in data[1]]+[i[3] for i in data[2]])
-		if minAll - 1000 < 0:
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
-		print(maxAll,minAll)
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+			
 		ax.plot(x, [i[3] for i in data[0]], color = 'red')
 		ax.plot(x, [i[3] for i in data[1]], color = 'green')
 		ax.plot(x, [i[3] for i in data[2]], color = 'blue')
 		ax.grid(True)
 		
-		ax.text(1, maxAll + 6700, "Elisa", fontsize=14,color = 'red')
-		ax.text(1, maxAll + 4500, "DNA", fontsize=14, color = 'blue')
-		ax.text(1, maxAll + 2300, "Sonera", fontsize=14, color = 'green')
+		ax.text(1, maxAll -gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(2, maxAll -gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(3, maxAll -gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		plt.ylabel("Lahetysnopeus(kbps)")	
 		
 		plt.xticks(range(1,8), days, rotation=45)
@@ -159,13 +210,21 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 		averageY2 = sum(y2) / len(y2)
 			
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[2] for i in data]+[i[3] for i in data])
-		minBoth = min([i[2] for i in data]+[i[3] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
+		maxAll = max([i[2] for i in data]+[i[3] for i in data])
+		minAll = min([i[2] for i in data]+[i[3] for i in data])
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
 		else:
-			minBoth = minBoth- 3000
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
 		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+			
 		ax.plot(x, [i[2] for i in data], color = "red")
 		ax.plot(x, [i[3] for i in data], color = "blue")
 		ax.plot([1,8],[averageY1, averageY1], color = "red", linestyle = "--")
@@ -173,10 +232,10 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 	
 		ax.grid(True)
 
-		ax.text(1, maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(1, maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
+		ax.text(1, maxAll-gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(1, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
 		
-		plt.ylim(minBoth, maxBoth + 9000)
+		plt.ylim(minAll, maxAll)
 		
 		ax.set_title(sortOperators + "n verkon keskiarvot alueelta " + location + " viikon aikana")
 		plt.xticks(range(1,8), days, rotation=45)
@@ -191,12 +250,21 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 		averageY2 = sum(y2) / len(y2)
 		
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[2] for i in data]+[i[3] for i in data])
-		minBoth = min([i[2] for i in data]+[i[3] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
+		maxAll = max([i[2] for i in data]+[i[3] for i in data])
+		minAll = min([i[2] for i in data]+[i[3] for i in data])
+		
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
 		else:
-			minBoth = minBoth- 3000
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
 			
 		ax.plot(x, [i[2] for i in data], color = "red")
 		ax.plot(x, [i[3] for i in data], color = "blue")
@@ -205,9 +273,9 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 	
 		ax.grid(True)
 		
-		ax.text(1, maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(1, maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
-		plt.ylim(minBoth, maxBoth + 9000)
+		ax.text(1, maxAll-gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(1, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.ylim(minAll,maxAll)
 		
 		ax.set_title("Keskiarvot alueelta " + location +" viikon aikana")
 		plt.xticks(range(1,8), days, rotation=45)
@@ -225,21 +293,29 @@ def drawGraphDay(data, location, resolution, sortOperators):
 		ax = fig1.add_subplot(211)
 		maxAll = max([i[1] for i in data[0]]+[i[1] for i in data[1]]+[i[1] for i in data[2]])
 		minAll = min([i[1] for i in data[0]]+[i[1] for i in data[1]]+[i[1] for i in data[2]])
-		if minAll - 1000 < 0:
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
-
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
+			
 		ax.plot(x, [i[1] for i in data[0]], color = 'red')
 		ax.plot(x, [i[1] for i in data[1]], color = 'green')
 		ax.plot(x, [i[1] for i in data[2]], color = 'blue')
 		ax.grid(True)
 		
-		ax.text(0.5,maxAll + 5700, "Elisa", fontsize=14,color = 'red')
-		ax.text(0.5, maxAll + 3400, "DNA", fontsize=14, color = 'blue')
-		ax.text(0.5, maxAll + 1100, "Sonera", fontsize=14, color = 'green')
+		ax.text(0.5,maxAll - gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(4.5, maxAll - gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(8.5, maxAll - gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		ax.set_title(location + ": " + "eri operaattorien keskiarvot paivan aikana" )
 		plt.ylabel("Latausnopeus(kbps)")	
 		plt.xlim(0,23)
@@ -249,21 +325,28 @@ def drawGraphDay(data, location, resolution, sortOperators):
 		
 		maxAll = max([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
 		minAll = min([i[2] for i in data[0]]+[i[2] for i in data[1]]+[i[2] for i in data[2]])
-		if minAll - 1000 < 0:
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
 			minAll = 0
 		else:
-			minAll = minAll- 3000
-		print(maxAll,minAll)
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
 		ax.plot(x, [i[2] for i in data[0]], color = 'red')
 		ax.plot(x, [i[2] for i in data[1]], color = 'green')
 		ax.plot(x, [i[2] for i in data[2]], color = 'blue')
 		ax.grid(True)
 		
-		ax.text(0.5, maxAll + 6700, "Elisa", fontsize=14,color = 'red')
-		ax.text(0.5, maxAll + 4500, "DNA", fontsize=14, color = 'blue')
-		ax.text(0.5, maxAll + 2300, "Sonera", fontsize=14, color = 'green')
+		ax.text(0.5, maxAll -gap, "Elisa", fontsize=14,color = 'red')
+		ax.text(4.5, maxAll -gap, "DNA", fontsize=14, color = 'blue')
+		ax.text(8.5, maxAll -gap, "Sonera", fontsize=14, color = 'green')
 		
-		plt.ylim(minAll, maxAll + 9000)
+		plt.ylim(minAll, maxAll)
 		plt.xlim(0,23)
 		plt.ylabel("Lahetysnopeus(kbps)")	
 		
@@ -275,13 +358,20 @@ def drawGraphDay(data, location, resolution, sortOperators):
 		averageY2 = sum(y2) / len(y2)
 			
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[1] for i in data]+[i[2] for i in data])
-		minBoth = min([i[1] for i in data]+[i[2] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
+		maxAll = max([i[1] for i in data]+[i[2] for i in data])
+		minAll = min([i[1] for i in data]+[i[2] for i in data])
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
 		else:
-			minBoth = minBoth- 3000
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
 		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
 		ax.plot(x, [i[1] for i in data], color = "red")
 		ax.plot(x, [i[2] for i in data], color = "blue")
 		ax.plot([0,23],[averageY1, averageY1], color = "red", linestyle = "--")
@@ -289,10 +379,10 @@ def drawGraphDay(data, location, resolution, sortOperators):
 	
 		ax.grid(True)
 
-		ax.text(0.5, maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(0.5, maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
+		ax.text(0.5, maxAll - gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(0.5, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
 		
-		plt.ylim(minBoth, maxBoth + 9000)
+		plt.ylim(minAll, maxAll)
 		
 		ax.set_title(sortOperators + "n verkon keskiarvot alueelta " + location + " paivan aikana")
 		plt.xlim(0,23)
@@ -305,13 +395,20 @@ def drawGraphDay(data, location, resolution, sortOperators):
 		averageY2 = sum(y2) / len(y2)
 		
 		ax = fig1.add_subplot(111)
-		maxBoth = max([i[1] for i in data]+[i[2] for i in data])
-		minBoth = min([i[1] for i in data]+[i[2] for i in data])
-		if minBoth - 1000 < 0:
-			minBoth = 0
+		maxAll = max([i[1] for i in data]+[i[2] for i in data])
+		minAll = min([i[1] for i in data]+[i[2] for i in data])
+		res = (maxAll - minAll) / 100
+
+		if minAll - res*10 < 0:
+			minAll = 0
 		else:
-			minBoth = minBoth- 3000
-			
+			minAll = minAll- res*10 
+		maxAll = maxAll + res*20
+		
+		if maxAll * 0.08<2200:
+			gap = 2200
+		else:
+			gap = maxAll * 0.08
 		ax.plot(x, [i[1] for i in data], color = "red")
 		ax.plot(x, [i[2] for i in data], color = "blue")
 		ax.plot([0,23],[averageY1, averageY1], color = "red", linestyle = "--")
@@ -319,9 +416,9 @@ def drawGraphDay(data, location, resolution, sortOperators):
 	
 		ax.grid(True)
 		
-		ax.text(0.5, maxBoth+6700, "Latausnopeus", fontsize=14, color='red')
-		ax.text(0.5, maxBoth+4500, "Lahetysnopeus", fontsize=14, color = 'blue')
-		plt.ylim(minBoth, maxBoth + 9000)
+		ax.text(0.5, maxAll-gap, "Latausnopeus", fontsize=14, color='red')
+		ax.text(0.5, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.ylim(minAll, maxAll)
 		
 		ax.set_title("Keskiarvot alueelta " + location + " paivan aikana")
 		plt.xlim(0,23)

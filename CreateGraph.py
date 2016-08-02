@@ -22,5 +22,5 @@ if __name__ == '__main__':
 	fir = 0
 	timeWindow = -30
 	resolution = 1
-	sortOperators = "Sonera"
+	sortOperators = 0
 	createWantedGraph(key, location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators)
