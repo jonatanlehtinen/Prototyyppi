@@ -127,7 +127,8 @@ def drawGraphLongTime(data,location,sortOperators):
 		ax.set_title("Keskiarvot alueelta " + location )
 
 	fig1.autofmt_xdate()
-	plt.show()
+	#plt.show()
+	pylab.savefig("testi.png")
 
 def drawGraphWeek(data, location, resolution, sortOperators):
 	fig1 = plt.figure()
@@ -281,8 +282,8 @@ def drawGraphWeek(data, location, resolution, sortOperators):
 		plt.xticks(range(1,8), days, rotation=45)
 		plt.xlim(1,8)
 
-	plt.show()
-
+	#plt.show()
+	pylab.savefig("testi.png")
 
 def drawGraphDay(data, location, resolution, sortOperators):
 	
@@ -423,4 +424,6 @@ def drawGraphDay(data, location, resolution, sortOperators):
 		ax.set_title("Keskiarvot alueelta " + location + " paivan aikana")
 		plt.xlim(0,23)
 
-	plt.show()
+	#plt.show()
+	pylab.savefig("testi.png")
+

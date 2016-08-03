@@ -1,6 +1,7 @@
 import getAverage as calc
 import datetime
 from drawgraph import *
+import sys
 
 def createWantedGraph(key,location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators):
 	time = datetime.date(2016,6,13)
@@ -13,14 +14,15 @@ def createWantedGraph(key,location, typeOfLocation, longTime, weekly, fir, timeW
 		drawGraphDay(dataForGraphs, location, resolution, sortOperators)
 
 if __name__ == '__main__':
+	'''
 	key = 0
 	location = "Espoo"
 	typeOfLocation = 2
 	longTime = 0
-	
 	weekly = 0
 	fir = 0
 	timeWindow = -30
 	resolution = 1
 	sortOperators = 0
-	createWantedGraph(key, location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators)
+	'''
+	createWantedGraph(int(sys.argv[1]), sys.argv[2], int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), int(sys.argv[9]))
