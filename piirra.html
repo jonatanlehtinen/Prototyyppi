@@ -7,6 +7,13 @@
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+function myFunction() {
+    document.getElementById("dna").disabled = !document.getElementById("seperate").checked;
+    document.getElementById("elisa").disabled = !document.getElementById("seperate").checked;
+    document.getElementById("sonera").disabled = !document.getElementById("seperate").checked;
+}
+</script>
 </head>
 <body style="background-color:#313538">
 <nav class="navbar navbar-inverse" style="background-color:#313538">
@@ -24,22 +31,63 @@
   <p>Piirrä kuvaajia valitsemistasi alueista ja vertaile operaattoreita niiden avulla</p>
   <div class="jumbotron text-center" style="background-color: #313538">
     <h1 style="color:white">Syötä haluamasi tiedot</h1>
-    <div class="container-fluid">
-      <form role="form" action="index.php" method="post">
+    <div class="container" style="color:white">
+      <form class="form-horizontal" role="form" action="draw.php" method="post">
         <div class="form-group">
-          <label for="email">Postinumero 1:</label>
-          <input type="text" class="form-control" id="postinumero1" placeholder="Syötä postinumero" name="postinumero1">
+          <label class="control-label col-sm-2" style="color:white">uid(vapaa-ehtoinen)</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="uid" name="uid" placeholder="Syötä uid">
+          </div>
         </div>
         <div class="form-group">
-          <label for="pwd">Postinumero 2:</label>
-          <input type="text" class="form-control" id="postinumero2" placeholder="Syötä postinumero" name="postinumero2">
+          <label class="control-label col-sm-2" style="color:white">Alue:</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" id="alue" name="alue" placeholder="Syötä alue">
+          </div>
         </div>
         <div class="form-group">
-          <label for="pwd">Postinumero 3:</label>
-          <input type="text" class="form-control" id="postinumero3" placeholder="Syötä postinumero" name="postinumero3">
+          <div class="col-sm-offset-2 col-sm-10">
+            <p>Annoitko alueeksi kaupungin vai postinumeron?</p>
+            <div class="radio">
+              <label><input type="radio" id="postinumero" value="1" name="valinta1" checked>Postinumero</label>
+            </div>
+            <div class="radio">
+              <label><input type="radio" id="kaupunki" value="2" name="valinta1">Kaupunki</label>
+            </div>
+          </div>
+	</div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <p>Eritelläänkö kuvaajaan operaattorit?</p>
+            <div class="checkbox">
+              <label><input type="checkbox" name="seperate" value="operators" onchange="myFunction()" id="seperate">Kyllä</label>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <p>Valitse haluamasi operaattori</p>
+                  <div class="radio">
+                    <label><input type="radio" value="DNA" name="operator" id="dna" disabled>DNA</label>
+                    <label><input type="radio" value="Elisa" name="operator" id="elisa" disabled>Elisa</label>
+                    <label><input type="radio" value="Sonera" name="operator" id="sonera" disabled>Sonera</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="form-group">
-          <button type="submit" class="btn btn-default">Submit</button>
+          <div class="col-sm-offset-2 col-sm-10">
+            <p>Tahdotko kuvaajan esittävän päivittäistä, viikottaista vai pidemmän aikavälilä dataa?</p>
+            <div class="radio">
+              <label><input type="radio" value="day" name="time" id="day" checked>Päivittäinen</label>
+              <label><input type="radio" value="week" name="time"id="week">Viikottainen</label>
+              <label><input type="radio" value="long" name="time" id="long">Pidempi aikaväli</label>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Submit</button>
+          </div>
         </div>
       </form>
     </div>
