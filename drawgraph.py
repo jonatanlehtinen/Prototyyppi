@@ -4,7 +4,6 @@ import pylab
 import numpy as np
 import datetime
 
-# -*- coding: ISO-8859-1 -*-
 
 
 def drawGraphLongTime(data,key,location,sortOperators,filename):
@@ -48,7 +47,7 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		plt.ylim(minAll, maxAll)
 		#title and labels are added
 		plt.title(location + ": " + "eri operaattorien keskiarvot" )
-		plt.ylabel("Latausnopeus(kbps)")	
+		plt.ylabel("Lätausnopeus(kbps)")	
 		
 		#Second subplot: upload averages
 		plt.subplot(212)
@@ -74,7 +73,7 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		plt.text(temp[14], maxAll - res*15, "Sonera", fontsize=14, color = 'green')
 		
 		plt.ylim(minAll, maxAll)
-		plt.ylabel("Lahetysnopeus(kbps)")	
+		plt.ylabel("Lähetysnopeus(kbps)")	
 
 	elif sortOperators in ["Elisa","Sonera","DNA"]:
 		#This is used if only one operator is drawn.
@@ -95,7 +94,7 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 
 		temp = [i[0] for i in data]
 		plt.text(temp[3], maxAll - res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(temp[3], minAll + res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(temp[3], minAll + res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		plt.ylim(minAll, maxAll)
 		
 		plt.title(sortOperators + "n verkon keskiarvot alueelta " + location )
@@ -120,7 +119,7 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		
 		temp = [i[0] for i in data]
 		plt.text(temp[3], maxAll - res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(temp[3], minAll + res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(temp[3], minAll + res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		plt.ylim(minAll, maxAll)
 		
 		#Also possibility to use key or location.
@@ -168,7 +167,7 @@ def drawGraphWeek(data, key, location, resolution, sortOperators,filename):
 		
 		plt.ylim(minAll, maxAll)
 		plt.title(location + ": " + "eri operaattorien viikottaiset keskiarvot" )
-		plt.ylabel("Latausnopeus(kbps)")	
+		plt.ylabel("Lätausnopeus(kbps)")	
 		
 		#x-axis is set to show the weekdays
 		plt.xticks(range(1,8), days, rotation=45)
@@ -197,7 +196,7 @@ def drawGraphWeek(data, key, location, resolution, sortOperators,filename):
 		plt.text(3, maxAll -res*15, "Sonera", fontsize=14, color = 'green')
 		
 		plt.ylim(minAll, maxAll)
-		plt.ylabel("Lahetysnopeus(kbps)")	
+		plt.ylabel("Lähetysnopeus(kbps)")	
 		
 		plt.xticks(range(1,8), days, rotation=45)
 		plt.xlim(1,8)
@@ -232,7 +231,7 @@ def drawGraphWeek(data, key, location, resolution, sortOperators,filename):
 		plt.grid(True)
 
 		plt.text(1, maxAll-res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(1, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(1, minAll+res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		
 		plt.ylim(minAll, maxAll)
 		
@@ -268,7 +267,7 @@ def drawGraphWeek(data, key, location, resolution, sortOperators,filename):
 		plt.grid(True)
 		
 		plt.text(1, maxAll-res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(1, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(1, minAll+res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		plt.ylim(minAll,maxAll)
 		if key:
 			plt.title("Viikottaiset keskiarvot avaimella " + key)
@@ -317,7 +316,7 @@ def drawGraphDay(data,key, location, resolution, sortOperators,filename):
 		plt.text(8.5, maxAll - res*15, "Sonera", fontsize=14, color = 'green')
 		
 		plt.ylim(minAll, maxAll)
-		plt.title(location + ": " + "eri operaattorien paivittaiset keskiarvot" )
+		plt.title(location + ": " + "eri operaattorien päivittäiset keskiarvot" )
 		plt.ylabel("Latausnopeus(kbps)")	
 		plt.xlim(0,23)
 		
@@ -381,11 +380,11 @@ def drawGraphDay(data,key, location, resolution, sortOperators,filename):
 		plt.grid(True)
 
 		plt.text(0.5, maxAll - res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(0.5, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(0.5, minAll+res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		
 		plt.ylim(minAll, maxAll)
 		
-		plt.title(sortOperators + "n verkon paivittaiset keskiarvot alueelta " + location)
+		plt.title(sortOperators + "n verkon päivittäiset keskiarvot alueelta " + location)
 		plt.xlim(0,23)
 		
 	else:
@@ -414,12 +413,12 @@ def drawGraphDay(data,key, location, resolution, sortOperators,filename):
 		plt.grid(True)
 		
 		plt.text(0.5, maxAll-res*15, "Latausnopeus", fontsize=14, color='red')
-		plt.text(0.5, minAll+res, "Lahetysnopeus", fontsize=14, color = 'blue')
+		plt.text(0.5, minAll+res, "Lähetysnopeus", fontsize=14, color = 'blue')
 		plt.ylim(minAll, maxAll)
 		if key:
-			plt.title("Paivittaiset keskiarvot avaimella " + key)
+			plt.title("Päivittäiset keskiarvot avaimella " + key)
 		elif location:
-			plt.title("Paivittaiset keskiarvot alueelta " + location)
+			plt.title("Päivittäiset keskiarvot alueelta " + location)
 		plt.xlim(0,23)
 
 	pylab.savefig(filename)
