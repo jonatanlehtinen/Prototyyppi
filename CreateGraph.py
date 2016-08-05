@@ -1,6 +1,7 @@
 import getAverage as calc
 import datetime
 from drawgraph import *
+import sys
 
 def createWantedGraph(time, key,location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators,filename):
 	#This function is given the parameters, then calls the getAverages and then gives
@@ -53,5 +54,14 @@ if __name__ == '__main__':
 	timeWindow = -60
 	resolution = 1
 	sortOperators = 0
-	filename = "bar.png"
-	createWantedGraph(time, key, location, typeOfLocation, longTime, weekly, fir, timeWindow, resolution, sortOperators,filename)
+	isWeekly = True
+	key = 0
+	if(sys.argv[9] == "0"):
+		sortOperators = 0
+	elif(sys.argv[9] != "1"):
+		sortOperators = sys.argv[9]
+	if(sys.argv[1] != "0"):
+		key = sys.argv[1]
+	if(sys.argv[2] != "0"):
+		location = sys.argv[2]
+	createWantedGraph(time, key, location, int(sys.argv[3]), int(sys.argv[4]), int(sys.argv[5]), int(sys.argv[6]), int(sys.argv[7]), int(sys.argv[8]), sortOperators, sys.argv[10])
