@@ -4,6 +4,9 @@ import pylab
 import numpy as np
 import datetime
 
+# -*- coding: ISO-8859-1 -*-
+
+
 def drawGraphLongTime(data,key,location,sortOperators,filename):
 	#This drawGraph is used if long time averages are plotted.
 	#Takes the data in, and saves it as filename
@@ -123,7 +126,7 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		#Also possibility to use key or location.
 		if key:
 			plt.title("Keskiarvot avaimella " + key )
-		else:
+		elif location:
 			plt.title("Keskiarvot alueelta " + location )
 			
 	#This is used to place the dates on x-axis properly.
@@ -269,7 +272,7 @@ def drawGraphWeek(data, key, location, resolution, sortOperators,filename):
 		plt.ylim(minAll,maxAll)
 		if key:
 			plt.title("Viikottaiset keskiarvot avaimella " + key)
-		else:
+		elif location:
 			plt.title("Viikottaiset keskiarvot alueelta " + location)				
 				
 		plt.xticks(range(1,8), days, rotation=45)
@@ -350,7 +353,7 @@ def drawGraphDay(data,key, location, resolution, sortOperators,filename):
 		
 		plt.ylim(minAll, maxAll)
 		plt.xlim(0,23)
-		plt.ylabel("Lahetysnopeus(kbps)")	
+		plt.ylabel("Lähetysnopeus(kbps)")	
 		
 	elif sortOperators in ["Elisa", "DNA", "Sonera"]:
 		y1 = [i[1] for i in data]
@@ -415,7 +418,7 @@ def drawGraphDay(data,key, location, resolution, sortOperators,filename):
 		plt.ylim(minAll, maxAll)
 		if key:
 			plt.title("Paivittaiset keskiarvot avaimella " + key)
-		else:
+		elif location:
 			plt.title("Paivittaiset keskiarvot alueelta " + location)
 		plt.xlim(0,23)
 
