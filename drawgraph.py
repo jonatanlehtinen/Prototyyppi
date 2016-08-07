@@ -38,8 +38,8 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		#Legends are added to the plot.
 		temp = [i[0] for i in data[0]]
 		plt.text(temp[3],maxAll- res*15, "Elisa", fontsize=14,color = 'red')
-		plt.text(temp[10], maxAll - res*15, "DNA", fontsize=14, color = 'blue')
-		plt.text(temp[14], maxAll - res*15, "Sonera", fontsize=14, color = 'green')
+		plt.text(temp[20], maxAll - res*15, "DNA", fontsize=14, color = 'blue')
+		plt.text(temp[37], maxAll - res*15, "Sonera", fontsize=14, color = 'green')
 		
 		#y-axis limits are set
 		plt.ylim(minAll, maxAll)
@@ -67,8 +67,8 @@ def drawGraphLongTime(data,key,location,sortOperators,filename):
 		
 		temp = [i[0] for i in data[0]]
 		plt.text(temp[3],maxAll -res*15, "Elisa", fontsize=14,color = 'red')
-		plt.text(temp[10], maxAll - res*15, "DNA", fontsize=14, color = 'blue')
-		plt.text(temp[14], maxAll - res*15, "Sonera", fontsize=14, color = 'green')
+		plt.text(temp[20], maxAll - res*15, "DNA", fontsize=14, color = 'blue')
+		plt.text(temp[37], maxAll - res*15, "Sonera", fontsize=14, color = 'green')
 		
 		plt.ylim(minAll, maxAll)
 		plt.ylabel("Lähetysnopeus(kbps)")	
