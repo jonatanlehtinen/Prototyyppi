@@ -83,9 +83,9 @@ function create() {
   <img src="netradar.png" width="150" heigth="100" href="testi.html">
   <div class="container style="background-color:#313538"">
     <ul class="nav navbar-nav" style="color:#313538">
+      <li><a href="esittely.html">Prototyypin esittely</a></li>
       <li><a href="parasoperaattori.html">Parhaan operaattorin valinta</a></li>
       <li><a href="piirra.html">Kuvaajien piirtotyökalut</a></li>
-      <li><a href="esittely.html">Prototyypin esittely</a></li>
     </ul>
   </div>
 </nav>

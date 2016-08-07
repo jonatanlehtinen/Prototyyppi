@@ -1,4 +1,4 @@
-import mysql.connector as mariadb
+import MySQLdb as mariadb
 from _datetime import date, datetime, timedelta
 import datetime
 import numpy
@@ -8,9 +8,10 @@ def getFromDataBase(time, key, location, typeOfLocation, lengthOfTime, operator)
       
     try:
         #Create connection to database
-        mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
+        mariadb_connection = mariadb.connect(user='netti', passwd='Passwd', db='nettitutka')
         cursor = mariadb_connection.cursor()
-        
+        print(key, time)
+        print(location, typeOfLocation, lengthOfTime, operator)        
         if typeOfLocation == 0:      
             #Query for data 
             #Select data from certain time window and possibly key
