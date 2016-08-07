@@ -1,16 +1,8 @@
 
 <?php
-//$postcodes = array($_POST["postinumero1"], $_POST["postinumero2"], $_POST["postinumero3"]);
-//$alue = $_POST["alue"];
-//$uid = $_POST["uid"];
-//$valinta1 = $_POST["valinta1"];
-//$operators = $_POST["operators"];
-//$time = $_POST["time"];
-//$cmnd = "";
-//echo $alue;
-
-
+//function for creating graph
 function create() {
+	//set variables from form
 	$alue = $_POST["alue"];
 	$uid = $_POST["uid"];
 	$valinta1 = $_POST["valinta1"];
@@ -39,7 +31,7 @@ function create() {
 		$time = "0";
 		$long = "1";
 	}
-	if(empty($alue)){ 
+	if(empty($alue)){
                 $alue = "0";
         }
 	if(empty($uid)) {
@@ -49,20 +41,10 @@ function create() {
 		$valinta1 = "0";
 		$seperate = "0";
 	}
+	//create command for creating graph
         $cmnd = "python3 CreateGraph.py {$uid} {$alue} {$valinta1} {$long} {$time} 0 -150 1 {$seperate} 'testi.png'";
-	echo $cmnd;
-	echo $alue;
-	echo $valinta1;
-	echo empty($operators);
-//	if($alue != "" && $valinta1 == "postinumero" && empty($operators)){
-//		$cmnd = "python3 CreateGraph.py 0 {$alue} 1 0 0 0 -150 1 0 'testi.png'";
- //     		}
-//	elseif($alue != "" && $valinta1 == "kaupunki" && empty($operators)){
-//		echo "masdfio";
-  //      	$cmnd = "python3 CreateGraph.py 0 {$alue} 2 0 0 0 -150 1 0 'testi.png'";
-//	}
 
-	//$cmnd = "python3 CreateGraph.py 0 {$alue} 1 0 0 0 -150 1 0 'testi.png'";
+	//run command
 	shell_exec($cmnd);
 	}
 ?>
@@ -90,7 +72,7 @@ function create() {
   </div>
 </nav>
 <div class="jumbotron text-center" style="background-color: #37b465">
-  <h1>Mikä operaattori toimii parhaiten alueellani?</h1>
+  <h1>Kuinka hyvin mobiiliverkkosi toimii alueellasi?</h1>
   <!--<p>Prototyyppi on tuotettu osana Aalto-yliopiston Protopaja-kurssia</p>-->
   <div class="jumbotron text-center" style="background-color: #313538">
     <h1 style="color:white"></h1>

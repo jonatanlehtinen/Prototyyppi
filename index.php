@@ -1,15 +1,16 @@
 
 <?php
-echo $_POST["postinumero1"];
-$postcodes = array(htmlspecialchars($_POST["postinumero1"]), htmlspecialchars($_POST["postinumero2"]), htmlspecialchars($_POST["postinumero3"]));
+
+//get postcodes from form
+$postcodes = array($_POST["postinumero1"], $_POST["postinumero2"], $_POST["postinumero3"]);
+//create command for Python function
 $cmnd = "python3 /home/lehtinj14/protopaja/GetBestOperator.py {$postcodes[0]} {$postcodes[1]} {$postcodes[2]}";
 $output = shell_exec($cmnd);
 $length = strlen($output);
 $startIndex = 0;
 $endIndex = 0;
 $myarray = array();
-//$result = json_decode($output, true);
-//var_dump($result);
+//parse python function's output
 for($i=0; $i<$length; $i++){
         if($output[$i] == "[" && $output[$i+1] =="[" ){
                 $startIndex = $i + 2;
@@ -23,6 +24,7 @@ for($i=0; $i<$length; $i++){
                 $startIndex = $i + 1;
         }
 }
+//get right values from freshly created array
 $firstoperator = str_replace("'", "", $myarray[0][0][0]);
 $secondoperator = str_replace("'", "", $myarray[1][0][0]);
 $thirdoperator = str_replace("'", "", $myarray[2][0][0]);
@@ -59,17 +61,6 @@ if(max(array(count($myarray[0][0]), count($myarray[1][0]), count($myarray[2][0])
 elseif(max(array(count($myarray[0][0]), count($myarray[1][0]), count($myarray[2][0]))) > 8){
 	$amountOfCodes = 3;
 }
-
-var_dump($myarray);
-
-
-
-
-//var_dump($myarray);
-//$cmnd = "python3 -c 'import GetBestOperator; GetOperator.getTheBestOperator([{$postcodes[0]}])'";
-//$output =  shell_exec($cmnd);
-//$output = exec("GetTheBestOperator.py 02150");
-//var_dump($output);
 ?>
 
 
@@ -147,7 +138,6 @@ var_dump($myarray);
       </div>
       <div class='row'>
 	<div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$firstoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$firstoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$firstopconfidence2}/5</h4>
@@ -155,7 +145,6 @@ var_dump($myarray);
           <h4>Pisteiden keskiarvo: {$firstopaverage}</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$secondoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$secondoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$secondopconfidence2}/5</h4>
@@ -163,7 +152,6 @@ var_dump($myarray);
           <h4>Pisteiden keskiarvo: {$secondopaverage}</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$thirdoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$thirdoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$thirdopconfidence2}/5</h4>
@@ -195,19 +183,16 @@ var_dump($myarray);
       </div>
       <div class='row'>
 	<div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$firstoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$firstoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$firstopconfidence2}/5</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$secondoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$secondoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$secondopconfidence2}/5</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$thirdoperator}</h3>
           <h4>{$postalcode2}</h4>
           <h4>Saamat pisteet: {$thirdoppoints2}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$thirdopconfidence2}/5</h4>
@@ -215,7 +200,6 @@ var_dump($myarray);
       </div>
       <div class='row'>
 	<div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$firstoperator}</h3>
           <h4>{$postalcode3}</h4>
           <h4>Saamat pisteet: {$firstoppoints3}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$firstopconfidence3}/5</h4>
@@ -223,7 +207,6 @@ var_dump($myarray);
           <h4>Pisteiden keskiarvo: {$firstopaverage}</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$secondoperator}</h3>
           <h4>{$postalcode3}</h4>
           <h4>Saamat pisteet: {$secondoppoints3}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$secondopconfidence3}/5</h4>
@@ -231,7 +214,6 @@ var_dump($myarray);
           <h4>Pisteiden keskiarvo: {$secondopaverage}</h4>
         </div>
         <div class='col-sm-4' style='background-color:#37b465'>
-          <h3>{$thirdoperator}</h3>
           <h4>{$postalcode3}</h4>
           <h4>Saamat pisteet: {$thirdoppoints3}/8</h4>
           <h4>Arvio pisteiden luotettavuudelle: {$thirdopconfidence3}/5</h4>
