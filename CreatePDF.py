@@ -8,7 +8,7 @@ import datetime
 def consumerReport(time, location, typeOfLocation):
 	
 	#Initializing the pdf
-	c = canvas.Canvas("pdftestaus.pdf")
+	c = canvas.Canvas("netradar_report.pdf")
 	
 	#Draw netradar logo and line below that
 	c.drawImage("netradar_1.png", 97,775, width=100,height=30,mask=None) 
@@ -75,13 +75,14 @@ def consumerReport(time, location, typeOfLocation):
 
 def enterpriseReport(time, key):
 	
-	c = canvas.Canvas("pdftestaus.pdf")
+	c = canvas.Canvas("netradar_report.pdf")
 	c.drawImage("netradar_1.png", 97,775, width=100,height=30,mask=None) 
 	
 	c.line(97,770,492,770)
 	c.setFont("Times-Roman", 25)
 	c.drawCentredString(297,730,"Raportti avaimella " + location)
-
+	
+	#Weekly averages for the key.
 	fig,averageDownlink,averageUplink,averagePing = createWantedGraph(time, key, 0, 0, 0, 1, 0, -60, 1, 0,"foo.png")
 	if fig:
 		c.drawImage("foo.png", 80, 460, width = 450, height = 260, mask =None)
@@ -94,6 +95,7 @@ def enterpriseReport(time, key):
 		c.drawString(150, 420, "Lähetysnopeus:  " + "{0:.2f}".format(averageUplink) + "mbps")
 		c.drawString(150, 405, "Latenssi:       " + "{0:.2f}".format(averagePing) + "ms")
 	
+	#Daily averages for the key
 	fig,averageDownlink,averageUplink,averagePing = createWantedGraph(time, key, 0, 0, 0, 0, 0, -60, 1, 0,"foo2.png")
 	if fig:
 		c.drawImage("foo2.png", 80, 130, width = 450, height = 260, mask = None)
@@ -105,12 +107,13 @@ def enterpriseReport(time, key):
 		c.drawString(150, 75, "Lähetysnopeus:  " + "{0:.2f}".format(averageUplink) + "mbps")
 		c.drawString(150, 60, "Latenssi:       " + "{0:.2f}".format(averagePing) + "ms")
 	
-	
+	#New page
 	c.showPage()
 	
 	c.drawImage("netradar_1.png", 97,775, width=100,height=30,mask=None) 
-	
 	c.line(97,770,492,770)
+	
+	#Long time averages for the key
 	fig,averageDownlink,averageUplink,averagePing = createWantedGraph(time,key, 0, 0, 1, 0, 0, -30, 1, 0,"foo3.png")
 	if fig:
 		c.drawImage("foo3.png", 80, 460, width = 450, height = 280, mask = None)
