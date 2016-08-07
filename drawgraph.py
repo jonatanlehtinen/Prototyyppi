@@ -4,8 +4,6 @@ import pylab
 import numpy as np
 import datetime
 
-
-
 def drawGraphLongTime(data,key,location,sortOperators,filename):
 	#This drawGraph is used if long time averages are plotted.
 	#Takes the data in, and saves it as filename

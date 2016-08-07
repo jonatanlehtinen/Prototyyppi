@@ -5,7 +5,6 @@ import numpy
 
 
 def getFromDataBase(time, key, location, typeOfLocation, lengthOfTime, operator):
-      
     try:
         #Create connection to database
         mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
@@ -101,7 +100,7 @@ def getAveragesSortOperators(time, key, location, typeOfLocation,longTime, weekl
         if longTime:
             data = getAveragesLongTime(time, key, location, typeOfLocation, sortOperators)
         elif filter:
-            data = getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, sortOperators)
+            data = getAveragesFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, sortOperators)
         elif weekly:
             data = calculateAveragesWeekly(time, key, location, typeOfLocation, timeWindow, resolution, sortOperators,0,0)
         else:
@@ -112,7 +111,7 @@ def getAveragesSortOperators(time, key, location, typeOfLocation,longTime, weekl
             if longTime:
                 data = getAveragesLongTime(time, key, location, typeOfLocation, operator)
             elif filter:
-                data = getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, operator)
+                data = getAveragesFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, operator)
             elif weekly:
                 data = calculateAveragesWeekly(time, key, location, typeOfLocation, timeWindow, resolution, operator,0,0)
             else:
@@ -131,15 +130,17 @@ def getAveragesLongTime(time, key, location, typeOfLocation, sortOperators):
     data = getFromDataBase(time, key, location, typeOfLocation, -180, sortOperators)
     data = [(item[0], item[1], item[2], item[3], item[4], item[5][:5], item[6]) for item in data]
     data.sort(key=lambda x: (x[0]))
+    if not data:
+        return False
     averages = []
-    
+    '''
     #The max and min download values from data are deleted.
     #2.5% of highest and lowest measures.
     maxVal = max([i[3] for i in data])
     minVal = 0.025*maxVal
     maxVal = 0.975*maxVal
     data = [i for i in data if i[3] < maxVal and i[3] > minVal] 
-    
+    '''
     #Averages for each day are calculated from data, and added to a new list.
     #The new list contains datetime, download ave, upload ave, latency ave and number of measurements.
     for item in data:
@@ -189,7 +190,7 @@ def getAveragesLongTime(time, key, location, typeOfLocation, sortOperators):
     
     return averages
    
-def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, sortOperators):
+def getAveragesFilter(weekly, time, key, location, typeOfLocation, timeWindow, resolution, sortOperators):
     #This function calculates weekly averages, and also takes into account the previous 9 weeks 
     #as a simple FIR filter.
     
@@ -198,7 +199,7 @@ def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindo
         val = 2
     else:
         val = 1
-    
+    values = 0
     #This for loop loops the 10 weeks, that are used to calculate averages.
     for i in range(1,11):
         #Data is fetched from database. 7 days for weekly aves, 1 day for daily aves.
@@ -210,7 +211,7 @@ def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindo
         newData = [(item[0], item[1], item[2], item[3], item[4], item[5][:5], item[6]) for item in data]
         
         #The functions to calculate the averages are called during the first iteration of for loop.
-        if i == 1:
+        if i == 1 or not values:
             if newData:
                 if weekly:
                     values = calculateAveragesWeekly(0,0,0,0,0,resolution,0,1,newData)
@@ -238,7 +239,10 @@ def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindo
                     values[line][val+1] += temp[line][val+1] * weight
                     values[line][val+2] += temp[line][val+2] * weight
                     values[line][val+3] += temp[line][val+3]
-                    values[line][-1] += weight
+                    if temp[line][val]:
+                        values[line][-1] += weight
+                    
+                   
         #Time is moved back 7 or 1 days for the next iteration of for loop.
         if weekly:    
             time = time - timedelta(days = 7)
@@ -246,6 +250,7 @@ def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindo
             time = time-timedelta(days = 1)
     
     #Averages are calulated and the total weight is removed.
+    print(values)
     for line in values:
         if line[-1]:
             line[val] = line[val] / line[-1]
@@ -256,15 +261,18 @@ def getAveragesWeekFilter(weekly, time, key, location, typeOfLocation, timeWindo
     return values
 
 def calculateAveragesDaily(time,key,location,typeOfLocation,timeWindow,resolution,sortOperators,filter,data):  
-    
     #This function calculates the averages hourly for a length of a day.
+    
+    #Returns data in format
+    #[hour, download, upload, latency, amount of measurements]
     
     #If this function is called by the filter, then it doesn't need to access the db.
     if not filter:
         data = getFromDataBase(time, key, location, typeOfLocation, timeWindow,sortOperators)
         data = [(item[0], item[1], item[2], item[3], item[4], item[5][:5], item[6]) for item in data]
         data.sort(key=lambda x: (x[0]))
-    
+    if not data:
+        return False
     averages = []
     
     #The max and min download values from data are deleted.
@@ -312,7 +320,9 @@ def calculateAveragesDaily(time,key,location,typeOfLocation,timeWindow,resolutio
     movingAve = movingaverage(values[-2:]+values+values[:2], windowSize)
     for i in range(len(averages)):
         averages[i][3] = movingAve[i]
-
+        
+        
+    #resolution can be used to calculate averages for every 'res' hour.
     if resolution > 1:
                  
         averagesNew = []
@@ -336,6 +346,8 @@ def calculateAveragesDaily(time,key,location,typeOfLocation,timeWindow,resolutio
             averagesNew.append(temp)
         averages = averagesNew
     
+    #if used by filter, one zero added for each data entry.
+    #required by filter.
     if filter:
         for line in averages:
             line.append(float(0))
@@ -343,11 +355,17 @@ def calculateAveragesDaily(time,key,location,typeOfLocation,timeWindow,resolutio
        	
 
 def calculateAveragesWeekly(time,key,location,typeOfLocation,timeWindow,resolution,sortOperators,filter,data):  
+    #Calculates averages for every hour of the week.
+    #The principle is the same as in calculateAveragesDaily
     
+    #Returns data in form 
+    #[day, hour, download, upload, latency, amount of meaurements]
     if not filter:
         data = getFromDataBase(time, key, location, typeOfLocation, timeWindow,sortOperators)
         data = [(item[0], item[1], item[2], item[3], item[4], item[5][:5], item[6]) for item in data]
         data.sort(key=lambda x: (x[0]))
+    if not data:
+        return False
     averages = []
     
     maxVal = max([i[3] for i in data])
