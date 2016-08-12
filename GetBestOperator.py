@@ -8,7 +8,7 @@ import mysql.connector as mariadb
 def getFromDataBase(code):
 	try:
 		#Create connection to database
-		mariadb_connection = mariadb.connect(user='root', password='pythontesti', database='postcodes')
+		mariadb_connection = mariadb.connect(user='User', password='Passwd', database='DatabaseName')
 		cursor = mariadb_connection.cursor()
 		
 		#Query for right data
