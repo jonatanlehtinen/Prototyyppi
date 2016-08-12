@@ -7,7 +7,7 @@ import numpy
 def getFromDataBase(time, key, location, typeOfLocation, lengthOfTime, operator):
     try:
         #Create connection to database
-        mariadb_connection = mariadb.connect(user='netti', passwd='Passwd', db='nettitutka')
+        mariadb_connection = mariadb.connect(user='User', passwd='Passwd', db='databaseName')
         cursor = mariadb_connection.cursor()
         print(key, time)
         print(location, typeOfLocation, lengthOfTime, operator)        
