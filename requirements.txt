@@ -4,7 +4,7 @@ chardet==2.3.0
 colorama==0.3.2
 decorator==4.0.9
 defusedxml==0.4.1
-Django==1.9
+Django==1.11.29
 html5lib==0.999
 ipython==4.2.0
 ipython-genutils==0.1.0
