@@ -26,5 +26,5 @@ telepot==8.1
 tmc==0.3.18
 traitlets==4.2.1
 unattended-upgrades==0.1
-urllib3==1.16
+urllib3==1.26.5
 virtualenv==15.0.2
